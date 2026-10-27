@@ -1,0 +1,50 @@
+[
+  {
+    "id": "DOC-01",
+    "title": "ISO 31000:2018 — Risk Management Guidelines (Ringkasan)",
+    "type": "standar",
+    "uploadedAt": "2026-10-27T15:59:46.605Z"
+  },
+  {
+    "id": "DOC-02",
+    "title": "ISO/IEC 27005:2022 — Information Security Risk Management (Ringkasan)",
+    "type": "standar",
+    "uploadedAt": "2026-10-27T15:59:46.606Z"
+  },
+  {
+    "id": "DOC-03",
+    "title": "NIST Cybersecurity Framework 2.0 (Ringkasan)",
+    "type": "standar",
+    "uploadedAt": "2026-10-27T15:59:46.606Z"
+  },
+  {
+    "id": "DOC-04",
+    "title": "COBIT 2019 — Governance & Management of IT (Ringkasan)",
+    "type": "standar",
+    "uploadedAt": "2026-10-27T15:59:46.606Z"
+  },
+  {
+    "id": "DOC-05",
+    "title": "Template Risk Register Standar Operasional",
+    "type": "template",
+    "uploadedAt": "2026-10-27T15:59:46.606Z"
+  },
+  {
+    "id": "DOC-06",
+    "title": "Panduan OJK/BI tentang Manajemen Risiko TI",
+    "type": "regulasi",
+    "uploadedAt": "2026-10-27T15:59:46.606Z"
+  },
+  {
+    "id": "DOC-07",
+    "title": "Kebijakan Manajemen Risiko TI Organisasi (Simulasi)",
+    "type": "kebijakan_internal",
+    "uploadedAt": "2026-10-27T15:59:46.606Z"
+  },
+  {
+    "id": "DOC-08",
+    "title": "Catatan Risiko & Insiden TI Organisasi (Data Sintetis)",
+    "type": "insiden_historis",
+    "uploadedAt": "2026-10-27T15:59:46.606Z"
+  }
+]

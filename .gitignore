@@ -1,0 +1,16 @@
+﻿# Environment & Secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Node dependencies
+**/node_modules/
+
+# Build outputs
+**/dist/
+
+# Uploads & local data
+**/uploads/*
+!**/uploads/.gitkeep
+p.utama/backend/data/sessions.json
+p.utama/backend/data/registers.json
