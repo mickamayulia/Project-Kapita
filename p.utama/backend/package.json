@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "riskregen-backend",
   "version": "1.0.0",
   "description": "Backend API untuk Aviako RiskRegen Assistant",
@@ -12,6 +12,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "pdf-parse": "^2.4.5"
   }
 }
