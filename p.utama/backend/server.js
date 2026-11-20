@@ -457,6 +457,30 @@ app.post('/api/analyze', async (req, res) => {
       }
     }
 
+    // 1. CEK DULU MASTER REGISTER RESMI (registers.json)
+    // Jika keluhan insiden pengguna sudah pernah dipetakan & disahkan oleh Manajemen, gunakan acuan resmi tersebut!
+    const registers = readJson(REGISTERS_FILE);
+    const wordsInQuery = message.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+    let matchedOfficialRisks = [];
+
+    for (const reg of registers) {
+      if (reg.daftar_risiko && Array.isArray(reg.daftar_risiko)) {
+        for (const risk of reg.daftar_risiko) {
+          const riskText = `${risk.deskripsi} ${risk.kategori} ${risk.mitigasi}`.toLowerCase();
+          const matchCount = wordsInQuery.filter(word => riskText.includes(word)).length;
+          // Bila ada kesesuaian kuat kata kunci insiden dengan risiko yang sudah sah (>= 2 kata kunci penting)
+          if (matchCount >= 2 && !matchedOfficialRisks.some(m => m.id === risk.id)) {
+            matchedOfficialRisks.push({
+              ...risk,
+              isApprovedMaster: true,
+              approvedRegisterId: reg.id,
+              approvedDate: reg.savedAt
+            });
+          }
+        }
+      }
+    }
+
     // Ambil dokumen rujukan aktif untuk Grounding dinamis
     const docs = readJson(DOCS_FILE);
     const contextSnippets = getRelevantContext(message, docs);
@@ -465,6 +489,14 @@ app.post('/api/analyze', async (req, res) => {
     if (contextSnippets.length > 0) {
       groundingContext = "\n\nDOKUMEN RUJUKAN YANG TERSEDIA:\n" + 
         contextSnippets.map((c, i) => `[Sumber ${i+1}: ${c.dokumen}]\n"${c.text}"`).join("\n\n");
+    }
+
+    // Jika ada risiko resmi yang cocok, sertakan ke prompt sebagai prioritas rujukan baku
+    let officialRiskContext = "";
+    if (matchedOfficialRisks.length > 0) {
+      officialRiskContext = `\n\nACUAN MASTER REGISTER RESMI YANG SUDAH DISAHKAN TOP MANAGEMENT:\n` +
+        matchedOfficialRisks.map(r => `- [${r.id}] ${r.deskripsi} (Kategori: ${r.kategori}, L: ${r.likelihood}, I: ${r.impact}, Mitigasi Resmi: ${r.mitigasi})`).join("\n") +
+        `\n\nPETUNJUK PENTING: Insiden ini memiliki kesesuaian dengan risiko yang SUDAH DISAHKAN manajemen di atas. Utamakan penggunaan parameter baku yang sudah disahkan tersebut agar terjadi konsistensi penilaian risiko!`;
     }
 
     // Berikan konteks risiko sebelumnya ke model jika ini kelanjutan chat di sesi yang sama
@@ -476,7 +508,7 @@ app.post('/api/analyze', async (req, res) => {
     }
 
     // Prompt dinamis dengan grounding dan instruksi penerjemahan
-    const fullSystemPrompt = `${SYSTEM_PROMPT}${groundingContext}${previousRiskContext}`;
+    const fullSystemPrompt = `${SYSTEM_PROMPT}${groundingContext}${officialRiskContext}${previousRiskContext}`;
 
     let messages = [
       { role: 'system', content: fullSystemPrompt },
@@ -614,6 +646,15 @@ app.post('/api/analyze', async (req, res) => {
     // GABUNGKAN SECARA AKUMULATIF (JANGAN HAPUS RISIKO LAMA DI SESI INI)
     let combinedRisks = [...existingRisks];
     for (const newR of newRisksProcessed) {
+      // Tandai jika risiko ini mengacu pada Master Register yang sudah disahkan
+      const isFromMaster = matchedOfficialRisks.some(
+        mr => mr.deskripsi.toLowerCase().includes(newR.deskripsi.toLowerCase().slice(0, 20)) ||
+              newR.deskripsi.toLowerCase().includes(mr.deskripsi.toLowerCase().slice(0, 20))
+      );
+      if (isFromMaster) {
+        newR.isApprovedMaster = true;
+      }
+
       const duplicateIdx = combinedRisks.findIndex(
         er => er.deskripsi.trim().toLowerCase() === newR.deskripsi.trim().toLowerCase()
       );
@@ -623,6 +664,14 @@ app.post('/api/analyze', async (req, res) => {
         newR.id = `R${String(combinedRisks.length + 1).padStart(3, '0')}`;
         combinedRisks.push(newR);
       }
+    }
+
+    // Buat ringkasan cerdas: sebutkan jika ada acuan master resmi yang langsung diadopsi
+    let summaryText = parsedResult.ringkasan;
+    if (matchedOfficialRisks.length > 0) {
+      summaryText = `[Acuan Baku Ditemukan] Insiden ini cocok dengan ${matchedOfficialRisks.length} item risiko yang TELAH DISAHKAN Manajemen sebelumnya. Sistem mengadopsi mitigasi resmi yang telah dipatenkan. ${summaryText || ''}`;
+    } else if (existingSession?.result?.ringkasan) {
+      summaryText = `${existingSession.result.ringkasan} (Diperbarui dengan temuan baru)`;
     }
 
     // Save or update session record
@@ -635,7 +684,7 @@ app.post('/api/analyze', async (req, res) => {
       status: existingSession ? (existingSession.status || 'draft') : 'draft', // 'draft' | 'submitted' | 'approved'
       modelUsed: selectedModel,
       result: {
-        ringkasan: parsedResult.ringkasan || (existingSession?.result?.ringkasan ? `${existingSession.result.ringkasan} (Diperbarui)` : 'Analisis selesai.'),
+        ringkasan: summaryText || 'Analisis selesai.',
         status: 'sukses',
         daftar_risiko: combinedRisks
       }
@@ -903,9 +952,65 @@ app.get('/api/agent/tasks', (req, res) => {
   res.json(readJson(AGENT_TASKS_FILE));
 });
 
-// 6. RECORD: Get all historical session records
+// 6. RECORD: Get historical session records (Admin hanya melihat yang diajukan/disahkan, User melihat miliknya)
 app.get('/api/records/sessions', (req, res) => {
-  res.json(readJson(SESSIONS_FILE));
+  const role = req.query.role || 'user';
+  const username = req.query.username || '';
+  const sessions = readJson(SESSIONS_FILE);
+
+  if (role === 'admin') {
+    // Admin HANYA melihat draf yang benar-benar SUDAH DIAJUKAN ('submitted') atau SUDAH DISAHKAN ('approved')
+    // Obrolan mentah/coba-coba user yang masih 'draft' TIDAK AKAN mengotori inbox Admin!
+    const adminInbox = sessions.filter(s => s.status === 'submitted' || s.status === 'approved');
+    return res.json(adminInbox);
+  }
+
+  // Jika role User: kembalikan draf miliknya atau semua draf lokalnya
+  res.json(sessions);
+});
+
+// Endpoint Khusus Admin: Update/Edit Nilai Risiko (L, I, Mitigasi, Residual) sebelum disahkan
+app.post('/api/sessions/update-risk', (req, res) => {
+  try {
+    const { sessionId, riskId, likelihood, impact, mitigasi, risk_owner, residualLikelihood, residualImpact } = req.body;
+    const sessions = readJson(SESSIONS_FILE);
+    const session = sessions.find(s => s.id === sessionId);
+    if (!session || !session.result?.daftar_risiko) {
+      return res.status(404).json({ error: "Sesi tidak ditemukan" });
+    }
+
+    const targetRisk = session.result.daftar_risiko.find(r => r.id === riskId);
+    if (!targetRisk) {
+      return res.status(404).json({ error: "Item risiko tidak ditemukan" });
+    }
+
+    // Hitung ulang skor deterministik dengan Tool 1
+    const newL = parseInt(likelihood) || targetRisk.likelihood;
+    const newI = parseInt(impact) || targetRisk.impact;
+    const { skor, tingkat, residualLikelihood: defResL, residualImpact: defResI, residualSkor, residualTingkat } = hitungSkorRisiko(newL, newI);
+
+    targetRisk.likelihood = newL;
+    targetRisk.impact = newI;
+    targetRisk.skor = skor;
+    targetRisk.tingkat = tingkat;
+    if (mitigasi !== undefined) targetRisk.mitigasi = mitigasi;
+    if (risk_owner !== undefined) {
+      targetRisk.risk_owner = risk_owner;
+      targetRisk.pemilik = risk_owner;
+    }
+    
+    // Residual bisa kustom dari admin atau formula default
+    targetRisk.residualLikelihood = parseInt(residualLikelihood) || defResL;
+    targetRisk.residualImpact = parseInt(residualImpact) || defResI;
+    targetRisk.residualSkor = targetRisk.residualLikelihood * targetRisk.residualImpact;
+    targetRisk.residualTingkat = targetRisk.residualSkor >= 15 ? 'tinggi' : targetRisk.residualSkor >= 7 ? 'sedang' : 'rendah';
+    targetRisk.isEditedByAdmin = true;
+
+    writeJson(SESSIONS_FILE, sessions);
+    res.json({ success: true, message: `Risiko ${riskId} berhasil diperbarui oleh Administrator`, session });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // 7. RECORD: Human-in-the-Loop Save Register (Tool 3: simpan_register & pengesahan admin)

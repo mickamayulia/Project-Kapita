@@ -22,6 +22,7 @@ export default function App() {
   const [inputPrompt, setInputPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [currentResult, setCurrentResult] = useState(null);
+  const [activeUserMessage, setActiveUserMessage] = useState(''); // Pesan instan user saat tombol kirim ditekan
   const [selectedModel, setSelectedModel] = useState('dots-studio/dots-3-note-preview:free');
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [sessionRecords, setSessionRecords] = useState([]);
@@ -49,24 +50,6 @@ export default function App() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  useEffect(() => {
-    fetchStatus();
-    fetchRecords();
-    fetchDocs();
-  }, []);
-
-  // Kunci scroll halaman belakang ketika modal preview dokumen dibuka
-  useEffect(() => {
-    if (previewDoc) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [previewDoc]);
-
   const fetchStatus = async () => {
     try {
       const res = await fetch(API_BASE + '/status');
@@ -78,9 +61,10 @@ export default function App() {
     }
   };
 
-  const fetchRecords = async () => {
+  const fetchRecords = async (overrideRole) => {
     try {
-      const res = await fetch(API_BASE + '/records/sessions');
+      const activeRole = overrideRole || role;
+      const res = await fetch(`${API_BASE}/records/sessions?role=${activeRole}&username=${loginUsername}`);
       const data = await res.json();
       setSessionRecords(data);
     } catch (e) {
@@ -98,9 +82,20 @@ export default function App() {
     }
   };
 
+  useEffect(() => {
+    fetchStatus();
+    fetchRecords();
+    fetchDocs();
+  }, [role, isLoggedIn]);
+
   const handleAnalyze = async (e) => {
     if (e) e.preventDefault();
-    if (!inputPrompt.trim() || loading) return;
+    const sentText = inputPrompt.trim();
+    if (!sentText || loading) return;
+
+    // 1. Tampilkan pesan user secara instan dan kosongkan input textarea
+    setActiveUserMessage(sentText);
+    setInputPrompt('');
     setLoading(true);
 
     try {
@@ -108,7 +103,7 @@ export default function App() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          message: inputPrompt, 
+          message: sentText, 
           model: selectedModel,
           sessionId: currentResult?.id || null, // Pertahankan sesi jika sedang berdiskusi di sesi yang sama
           author: role === 'admin' ? 'Administrator' : (loginUsername || 'Staf Operasional')
@@ -154,8 +149,35 @@ export default function App() {
   // Reset sesi untuk memulai analisis kasus insiden baru
   const handleNewSession = () => {
     setCurrentResult(null);
+    setActiveUserMessage('');
     setInputPrompt('');
     showToast('Sesi baru dimulai. Silakan masukkan laporan insiden.', 'info');
+  };
+
+  // Admin mengedit nilai L, I, mitigasi, atau residual
+  const handleUpdateRisk = async (riskId, updatedData) => {
+    if (!currentResult?.id) return;
+    try {
+      const res = await fetch(API_BASE + '/sessions/update-risk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: currentResult.id,
+          riskId,
+          ...updatedData
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setCurrentResult(data.session);
+        fetchRecords();
+        showToast(`Risiko ${riskId} berhasil diperbarui oleh Administrator!`, 'success');
+      } else {
+        showToast(data.error || 'Gagal memperbarui risiko', 'error');
+      }
+    } catch (e) {
+      showToast('Error: ' + e.message, 'error');
+    }
   };
 
   const handleSaveRegister = async () => {
@@ -527,6 +549,7 @@ export default function App() {
           onLoginSuccess={(chosenRole) => {
             setIsLoggedIn(true);
             setRole(chosenRole);
+            fetchRecords(chosenRole);
             setActiveTab(chosenRole === 'admin' ? 'admin-docs' : 'chat');
           }}
           showToast={showToast}
@@ -564,12 +587,14 @@ export default function App() {
             loading={loading}
             handleAnalyze={handleAnalyze}
             currentResult={currentResult}
+            activeUserMessage={activeUserMessage}
             handleExportCSV={handleExportCSV}
             handleExportJSON={handleExportJSON}
             handleSaveRegister={handleSaveRegister}
             handleSubmitToAdmin={handleSubmitToAdmin}
             handleNewSession={handleNewSession}
             saveSuccess={saveSuccess}
+            handleUpdateRisk={handleUpdateRisk}
             chartData={chartData}
             handleViewDocument={handleViewDocument}
           />
