@@ -107,13 +107,18 @@ export default function App() {
       const res = await fetch(API_BASE + '/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: inputPrompt, model: selectedModel })
+        body: JSON.stringify({ 
+          message: inputPrompt, 
+          model: selectedModel,
+          sessionId: currentResult?.id || null, // Pertahankan sesi jika sedang berdiskusi di sesi yang sama
+          author: role === 'admin' ? 'Administrator' : (loginUsername || 'Staf Operasional')
+        })
       });
       const data = await res.json();
       if (res.ok) {
         setCurrentResult(data);
         fetchRecords();
-        showToast('Analisis risiko berhasil diekstraksi!', 'success');
+        showToast('Analisis risiko berhasil diperbarui!', 'success');
       } else {
         showToast(data.error || 'Terjadi kesalahan analisis', 'error');
       }
@@ -122,6 +127,35 @@ export default function App() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // User mengajukan draf ke Admin untuk ditinjau
+  const handleSubmitToAdmin = async () => {
+    if (!currentResult?.id) return;
+    try {
+      const res = await fetch(API_BASE + '/sessions/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: currentResult.id })
+      });
+      if (res.ok) {
+        setCurrentResult(prev => ({ ...prev, status: 'submitted' }));
+        fetchRecords();
+        showToast('Draf berhasil diajukan ke Admin untuk ditinjau!', 'success');
+      } else {
+        const err = await res.json();
+        showToast(err.error || 'Gagal mengajukan draf', 'error');
+      }
+    } catch (e) {
+      showToast('Error: ' + e.message, 'error');
+    }
+  };
+
+  // Reset sesi untuk memulai analisis kasus insiden baru
+  const handleNewSession = () => {
+    setCurrentResult(null);
+    setInputPrompt('');
+    showToast('Sesi baru dimulai. Silakan masukkan laporan insiden.', 'info');
   };
 
   const handleSaveRegister = async () => {
@@ -153,39 +187,156 @@ export default function App() {
   const handleExportCSV = () => {
     if (!currentResult || !currentResult.result || !currentResult.result.daftar_risiko) return;
     const items = currentResult.result.daftar_risiko;
-    const headers = [
-      'ID',
-      'Kategori',
-      'Pernyataan Risiko',
-      'Penyebab',
-      'Dampak',
-      'Likelihood',
-      'Impact',
-      'Inherent Risk',
-      'Rencana Mitigasi',
-      'Status Verifikasi'
-    ];
-    const rows = items.map((r) => [
-      r.id_risiko,
-      `"${r.kategori || ''}"`,
-      `"${(r.pernyataan_risiko || '').replace(/"/g, '""')}"`,
-      `"${(r.penyebab || '').replace(/"/g, '""')}"`,
-      `"${(r.dampak || '').replace(/"/g, '""')}"`,
-      r.likelihood ?? 'N/A',
-      r.impact ?? 'N/A',
-      r.inherent_risk ?? 'N/A',
-      `"${(r.mitigasi || '').replace(/"/g, '""')}"`,
-      `"${r.status_verifikasi || ''}"`
-    ]);
+    const dateFormatted = new Date(currentResult.timestamp || Date.now()).toLocaleString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    }) + ' WITA';
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
-    const encodedUri = encodeURI(csvContent);
+    const incidentQuery = currentResult.userQuery || inputPrompt || '-';
+    const modelUsed = currentResult.modelUsed || selectedModel || 'dots-studio/dots-3-note-preview:free';
+    const sessionId = currentResult.id || ('SES-' + Date.now());
+    const summaryNarrative = currentResult.result?.ringkasan || '-';
+
+    // Buat HTML-based XML Spreadsheet yang kompatibel dengan Microsoft Excel & Google Sheets
+    // Dilengkapi Header Kop Formal, Warna Cell (Merah/Oranye/Hijau), Garis Border & Font Rapi
+    const excelContent = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <!--[if gte mso 9]>
+        <xml>
+          <x:ExcelWorkbook>
+            <x:ExcelWorksheets>
+              <x:ExcelWorksheet>
+                <x:Name>Risk Register Formal</x:Name>
+                <x:WorksheetOptions>
+                  <x:DisplayGridlines/>
+                </x:WorksheetOptions>
+              </x:ExcelWorksheet>
+            </x:ExcelWorksheets>
+          </x:ExcelWorkbook>
+        </xml>
+        <![endif]-->
+        <style>
+          body { font-family: Calibri, 'Segoe UI', Arial, sans-serif; }
+          .header-title { font-size: 16pt; font-weight: bold; color: #1e3a8a; }
+          .meta-label { font-weight: bold; color: #475569; background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 6px; }
+          .meta-value { border: 1px solid #cbd5e1; padding: 6px; }
+          th { background-color: #1e293b; color: #ffffff; font-weight: bold; border: 1px solid #0f172a; padding: 8px; font-size: 10pt; text-align: center; }
+          td { border: 1px solid #cbd5e1; padding: 6px 8px; font-size: 9.5pt; vertical-align: top; }
+          .cell-center { text-align: center; }
+          .badge-high { background-color: #fecaca; color: #991b1b; font-weight: bold; text-align: center; }
+          .badge-medium { background-color: #fef3c7; color: #92400e; font-weight: bold; text-align: center; }
+          .badge-low { background-color: #d1fae5; color: #065f46; font-weight: bold; text-align: center; }
+          .badge-verify { background-color: #f3f4f6; color: #4b5563; font-style: italic; text-align: center; }
+        </style>
+      </head>
+      <body>
+        <!-- KOP LAPORAN EKSEKUTIF -->
+        <table>
+          <tr>
+            <td colspan="9" class="header-title">REGISTER RISIKO TI & TATA KELOLA OPERASIONAL</td>
+          </tr>
+          <tr>
+            <td colspan="9" style="color: #64748b; font-size: 10pt;">Sistem Aviako RiskRegen Assistant • Grounding Standar ISO 31000 / COBIT 2019 / POJK</td>
+          </tr>
+          <tr><td colspan="9" style="height: 10px;"></td></tr>
+
+          <!-- METADATA GENERATE, LAPORAN INSIDEN, & PARAMETER MODEL -->
+          <tr>
+            <td colspan="2" class="meta-label">ID Sesi Analisis:</td>
+            <td colspan="7" class="meta-value" style="font-family: monospace; font-weight: bold;">${sessionId}</td>
+          </tr>
+          <tr>
+            <td colspan="2" class="meta-label">Waktu Generate:</td>
+            <td colspan="7" class="meta-value">${dateFormatted}</td>
+          </tr>
+          <tr>
+            <td colspan="2" class="meta-label">Laporan Insiden Pengguna:</td>
+            <td colspan="7" class="meta-value" style="font-style: italic; color: #0f172a;">"${incidentQuery}"</td>
+          </tr>
+          <tr>
+            <td colspan="2" class="meta-label">Parameter Model AI:</td>
+            <td colspan="7" class="meta-value"><strong>${modelUsed}</strong> (Gateway: OpenRouter • Temperature: 0.1 • Mode Deterministik)</td>
+          </tr>
+          <tr>
+            <td colspan="2" class="meta-label">Ringkasan Analisis AI:</td>
+            <td colspan="7" class="meta-value">${summaryNarrative}</td>
+          </tr>
+          <tr><td colspan="9" style="height: 14px;"></td></tr>
+        </table>
+
+        <!-- TABEL FORMAL REGISTER RISIKO (PERSIS DI UI) -->
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 50px;">ID</th>
+              <th style="width: 220px;">Pernyataan Risiko</th>
+              <th style="width: 100px;">Kategori</th>
+              <th style="width: 110px;">Inherent (L×I)</th>
+              <th style="width: 100px;">Skor Awal</th>
+              <th style="width: 130px;">Residual Target</th>
+              <th style="width: 260px;">Rencana Mitigasi</th>
+              <th style="width: 150px;">Risk Owner</th>
+              <th style="width: 240px;">Rujukan Klausul Regulasi</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items.map(r => {
+              const inherentScore = r.skor ?? r.inherent_risk;
+              const inherentLevel = r.tingkat || (inherentScore >= 15 ? 'tinggi' : inherentScore >= 7 ? 'sedang' : inherentScore >= 1 ? 'rendah' : 'perlu_verifikasi');
+              
+              const badgeClass = inherentLevel === 'tinggi' ? 'badge-high' : inherentLevel === 'sedang' ? 'badge-medium' : inherentLevel === 'rendah' ? 'badge-low' : 'badge-verify';
+              const resBadgeClass = r.residualTingkat === 'tinggi' ? 'badge-high' : r.residualTingkat === 'sedang' ? 'badge-medium' : r.residualTingkat === 'rendah' ? 'badge-low' : 'badge-verify';
+              
+              const citStr = Array.isArray(r.sumber) 
+                ? r.sumber.map(s => typeof s === 'object' ? `${s.dokumen || ''} (${s.bagian || ''})` : s).join('; ') 
+                : '-';
+
+              return `
+                <tr>
+                  <td class="cell-center" style="font-weight: bold; font-family: monospace;">${r.id || r.id_risiko}</td>
+                  <td>${r.deskripsi || r.pernyataan_risiko || '-'}</td>
+                  <td class="cell-center">${r.kategori || '-'}</td>
+                  <td class="cell-center">${r.likelihood !== null && r.likelihood !== undefined ? `${r.likelihood} × ${r.impact}` : '-'}</td>
+                  <td class="${badgeClass}">${inherentScore !== null && inherentScore !== undefined ? `${inherentScore} (${String(inherentLevel).toUpperCase()})` : 'Perlu Verifikasi'}</td>
+                  <td class="${resBadgeClass}">${r.residualSkor !== null && r.residualSkor !== undefined ? `${r.residualLikelihood}×${r.residualImpact} = ${r.residualSkor} (${String(r.residualTingkat).toUpperCase()})` : '-'}</td>
+                  <td>${r.mitigasi || '-'}</td>
+                  <td style="font-weight: bold; color: #1e40af;">${r.risk_owner || r.pemilik || 'Unit Operasional TI Bandara'}</td>
+                  <td style="font-size: 8.5pt; color: #334155;">${citStr}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+
+        <!-- FOOTER CATATAN KELAYAKAN -->
+        <table>
+          <tr><td colspan="9" style="height: 10px;"></td></tr>
+          <tr>
+            <td colspan="9" style="font-size: 8pt; color: #64748b; font-style: italic;">
+              * Dokumen ini diekspor resmi dari Sistem Aviako RiskRegen Assistant. Seluruh mitigasi berpedoman pada ISO 31000/27005 dan membutuhkan persetujuan pengesahan pejabat berwenang (Lapis 5 Guardrail).
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob([excelContent], { type: 'application/vnd.ms-excel;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `RiskRegister_${currentResult.id || 'export'}.csv`);
+    link.href = url;
+    link.download = `RiskRegister_${sessionId}.xls`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showToast('Laporan Register Risiko (Excel/Spreadsheet) berhasil diunduh!', 'success');
   };
 
   const handleExportJSON = () => {
@@ -402,7 +553,7 @@ export default function App() {
       />
 
       {/* Konten Utama Berdasarkan Tab */}
-      <main style={{ flex: 1, padding: '20px', maxWidth: '1440px', margin: '0 auto', width: '100%' }}>
+      <main style={{ flex: 1, padding: '16px 24px', maxWidth: '100%', width: '100%' }}>
         {activeTab === 'chat' && (
           <AnalysisView
             role={role}
@@ -416,6 +567,8 @@ export default function App() {
             handleExportCSV={handleExportCSV}
             handleExportJSON={handleExportJSON}
             handleSaveRegister={handleSaveRegister}
+            handleSubmitToAdmin={handleSubmitToAdmin}
+            handleNewSession={handleNewSession}
             saveSuccess={saveSuccess}
             chartData={chartData}
             handleViewDocument={handleViewDocument}

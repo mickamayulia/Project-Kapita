@@ -71,7 +71,7 @@ const upload = multer({ storage });
 // Batas Akses: Read-only, otomatis tanpa persetujuan manual karena murni perhitungan matematis
 export function hitungSkorRisiko(likelihood, impact) {
   if (likelihood == null || impact == null) {
-    return { skor: null, tingkat: 'perlu_verifikasi' };
+    return { skor: null, tingkat: 'perlu_verifikasi', residualLikelihood: null, residualImpact: null, residualSkor: null, residualTingkat: 'perlu_verifikasi' };
   }
   const l = Math.min(Math.max(parseInt(likelihood) || 1, 1), 5);
   const i = Math.min(Math.max(parseInt(impact) || 1, 1), 5);
@@ -79,7 +79,24 @@ export function hitungSkorRisiko(likelihood, impact) {
   let tingkat = 'rendah';
   if (skor >= 15) tingkat = 'tinggi';
   else if (skor >= 7) tingkat = 'sedang';
-  return { skor, tingkat };
+
+  // Proyeksi Residual Risk (Target Risiko Setelah Mitigasi Kontrol Diterapkan - Standar ERM / Resiko.ai)
+  // Mitigasi operasional menurunkan frekuensi (likelihood) minimal 1-2 tingkat, dan dampak (impact) 1 tingkat
+  const resL = Math.max(1, l >= 4 ? l - 2 : l - 1);
+  const resI = Math.max(1, i >= 4 ? i - 1 : i);
+  const residualSkor = resL * resI;
+  let residualTingkat = 'rendah';
+  if (residualSkor >= 15) residualTingkat = 'tinggi';
+  else if (residualSkor >= 7) residualTingkat = 'sedang';
+
+  return { 
+    skor, 
+    tingkat,
+    residualLikelihood: resL,
+    residualImpact: resI,
+    residualSkor,
+    residualTingkat
+  };
 }
 
 // Definisi Tools (OpenAI / OpenRouter Function Calling Spec)
@@ -415,10 +432,10 @@ function validateRiskSchema(obj) {
   return { valid: true };
 }
 
-// 5. USER: Chat & Risk Analysis Endpoint via OpenRouter
+// 5. USER: Chat & Risk Analysis Endpoint via OpenRouter (Multi-turn Accumulative Session)
 app.post('/api/analyze', async (req, res) => {
   try {
-    const { message, model, sessionId } = req.body;
+    const { message, model, sessionId, author } = req.body;
     const apiKey = process.env.OPENROUTER_API_KEY;
 
     if (!apiKey) {
@@ -428,6 +445,17 @@ app.post('/api/analyze', async (req, res) => {
     }
 
     const selectedModel = model || process.env.DEFAULT_MODEL || 'dots-studio/dots-3-note-preview:free';
+
+    // Baca sesi sebelumnya jika ada sessionId
+    const sessions = readJson(SESSIONS_FILE);
+    let existingSession = null;
+    let existingRisks = [];
+    if (sessionId) {
+      existingSession = sessions.find(s => s.id === sessionId);
+      if (existingSession && existingSession.result?.daftar_risiko) {
+        existingRisks = existingSession.result.daftar_risiko;
+      }
+    }
 
     // Ambil dokumen rujukan aktif untuk Grounding dinamis
     const docs = readJson(DOCS_FILE);
@@ -439,8 +467,16 @@ app.post('/api/analyze', async (req, res) => {
         contextSnippets.map((c, i) => `[Sumber ${i+1}: ${c.dokumen}]\n"${c.text}"`).join("\n\n");
     }
 
+    // Berikan konteks risiko sebelumnya ke model jika ini kelanjutan chat di sesi yang sama
+    let previousRiskContext = "";
+    if (existingRisks.length > 0) {
+      previousRiskContext = `\n\nRISIKO YANG SUDAH TERIDENTIFIKASI PADA SESI INI SEBELUMNYA (${existingRisks.length} item):\n` +
+        existingRisks.map(r => `- [${r.id}] ${r.deskripsi} (Kategori: ${r.kategori}, L: ${r.likelihood}, I: ${r.impact})`).join("\n") +
+        `\n\nINSTRUKSI PENTING: Ekstraksi temuan risiko baru dari laporan insiden terbaru ini untuk melengkapi daftar risiko yang sudah ada. Berikan output JSON daftar_risiko yang berisi temuan baru tersebut.`;
+    }
+
     // Prompt dinamis dengan grounding dan instruksi penerjemahan
-    const fullSystemPrompt = `${SYSTEM_PROMPT}${groundingContext}`;
+    const fullSystemPrompt = `${SYSTEM_PROMPT}${groundingContext}${previousRiskContext}`;
 
     let messages = [
       { role: 'system', content: fullSystemPrompt },
@@ -537,19 +573,26 @@ app.post('/api/analyze', async (req, res) => {
     }
 
     // Apply Tool 2: hitung_skor_risiko deterministik pada setiap risiko yang diekstrak
+    let newRisksProcessed = [];
     if (parsedResult.daftar_risiko && Array.isArray(parsedResult.daftar_risiko)) {
-      parsedResult.daftar_risiko = parsedResult.daftar_risiko.map((r, idx) => {
-        const { skor, tingkat } = hitungSkorRisiko(r.likelihood, r.impact);
+      newRisksProcessed = parsedResult.daftar_risiko.map((r, idx) => {
+        const { skor, tingkat, residualLikelihood, residualImpact, residualSkor, residualTingkat } = hitungSkorRisiko(r.likelihood, r.impact);
         return {
-          id: r.id || `R${String(idx + 1).padStart(3, '0')}`,
+          id: r.id || `R${String(existingRisks.length + idx + 1).padStart(3, '0')}`,
           deskripsi: r.deskripsi || '',
-          kategori: r.kategori || 'lain-lain',
+          kategori: r.kategori || 'operasional',
           likelihood: r.likelihood,
           impact: r.impact,
           skor: skor,
           tingkat: tingkat,
+          // Field Resiko.ai / Standar ERM
+          residualLikelihood: residualLikelihood,
+          residualImpact: residualImpact,
+          residualSkor: residualSkor,
+          residualTingkat: residualTingkat,
           mitigasi: r.mitigasi || 'Tidak ditemukan di dokumen rujukan',
-          pemilik: r.pemilik || 'Staf Operasional',
+          pemilik: r.pemilik || r.risk_owner || 'Unit Operasional TI Bandara',
+          risk_owner: r.pemilik || r.risk_owner || 'Unit Operasional TI Bandara',
           sumber: Array.isArray(r.sumber) ? r.sumber.map(s => {
             if (typeof s === 'object' && s !== null) {
               return {
@@ -568,22 +611,66 @@ app.post('/api/analyze', async (req, res) => {
       });
     }
 
-    // Save record to Sessions history
-    const sessions = readJson(SESSIONS_FILE);
-    const sessionRecord = {
-      id: sessionId || 'SES-' + Date.now(),
+    // GABUNGKAN SECARA AKUMULATIF (JANGAN HAPUS RISIKO LAMA DI SESI INI)
+    let combinedRisks = [...existingRisks];
+    for (const newR of newRisksProcessed) {
+      const duplicateIdx = combinedRisks.findIndex(
+        er => er.deskripsi.trim().toLowerCase() === newR.deskripsi.trim().toLowerCase()
+      );
+      if (duplicateIdx >= 0) {
+        combinedRisks[duplicateIdx] = { ...combinedRisks[duplicateIdx], ...newR, id: combinedRisks[duplicateIdx].id };
+      } else {
+        newR.id = `R${String(combinedRisks.length + 1).padStart(3, '0')}`;
+        combinedRisks.push(newR);
+      }
+    }
+
+    // Save or update session record
+    const activeSessionId = sessionId || ('SES-' + Date.now());
+    const finalSessionRecord = {
+      id: activeSessionId,
       timestamp: new Date().toISOString(),
-      userQuery: message,
+      userQuery: existingSession ? `${existingSession.userQuery} • ${message}` : message,
+      author: author || (existingSession ? existingSession.author : 'Staf Operasional'),
+      status: existingSession ? (existingSession.status || 'draft') : 'draft', // 'draft' | 'submitted' | 'approved'
       modelUsed: selectedModel,
-      result: parsedResult
+      result: {
+        ringkasan: parsedResult.ringkasan || (existingSession?.result?.ringkasan ? `${existingSession.result.ringkasan} (Diperbarui)` : 'Analisis selesai.'),
+        status: 'sukses',
+        daftar_risiko: combinedRisks
+      }
     };
-    sessions.unshift(sessionRecord);
+
+    const existingIndex = sessions.findIndex(s => s.id === activeSessionId);
+    if (existingIndex >= 0) {
+      sessions[existingIndex] = finalSessionRecord;
+    } else {
+      sessions.unshift(finalSessionRecord);
+    }
     writeJson(SESSIONS_FILE, sessions.slice(0, 50)); // Keep last 50 records
 
-    res.json(sessionRecord);
+    res.json(finalSessionRecord);
   } catch (error) {
     console.error("Analysis Error:", error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Endpoint untuk User mengajukan Draf ke Admin (Siap Ditinjau)
+app.post('/api/sessions/submit', (req, res) => {
+  try {
+    const { sessionId } = req.body;
+    const sessions = readJson(SESSIONS_FILE);
+    const session = sessions.find(s => s.id === sessionId);
+    if (!session) {
+      return res.status(404).json({ error: "Sesi draf tidak ditemukan" });
+    }
+    session.status = 'submitted';
+    session.submittedAt = new Date().toISOString();
+    writeJson(SESSIONS_FILE, sessions);
+    res.json({ success: true, message: "Draf berhasil diajukan ke Administrator untuk peninjauan & pengesahan.", session });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -821,7 +908,7 @@ app.get('/api/records/sessions', (req, res) => {
   res.json(readJson(SESSIONS_FILE));
 });
 
-// 7. RECORD: Human-in-the-Loop Save Register (Tool 3: simpan_register)
+// 7. RECORD: Human-in-the-Loop Save Register (Tool 3: simpan_register & pengesahan admin)
 app.post('/api/registers/save', (req, res) => {
   try {
     const { sessionId, title, daftar_risiko, status } = req.body;
@@ -836,6 +923,18 @@ app.post('/api/registers/save', (req, res) => {
     };
     registers.unshift(newRegister);
     writeJson(REGISTERS_FILE, registers);
+
+    // Update status sesi terkait menjadi 'approved' agar sinkron di master draf
+    if (sessionId) {
+      const sessions = readJson(SESSIONS_FILE);
+      const session = sessions.find(s => s.id === sessionId);
+      if (session) {
+        session.status = 'approved';
+        session.approvedAt = new Date().toISOString();
+        writeJson(SESSIONS_FILE, sessions);
+      }
+    }
+
     res.json({ success: true, register: newRegister });
   } catch (error) {
     res.status(500).json({ error: error.message });

@@ -162,6 +162,11 @@ Project-Kapita/
    - **Staf / User Portal:** Antarmuka bersih tanpa konfigurasi teknis rumit, difokuskan pada input insiden operasional, simulasi matriks 5×5, dan penyimpanan draf.
    - **Administrator Portal:** Dilengkapi otentikasi PIN/Password (`admin123`), akses pengelolaan *Knowledge Base* dokumen acuan RAG, manajemen master register seluruh organisasi, serta pengaturan API gateway LLM.
    - **Mode Demo Cepat (1-Klik):** Tersedia tombol pintas instan untuk demo pengujian di depan dosen tanpa perlu mengetik kredensial manual.
+7. **Standar Industri ERM / Resiko.ai (Inherent Risk vs Residual Risk & Risk Owner):**
+   - **Inherent Risk (Risiko Awal):** Menghitung keparahan risiko pada saat insiden pertama kali terjadi sebelum adanya kontrol.
+   - **Residual Risk (Target Pasca-Mitigasi):** Memproyeksikan penurunan tingkat kemungkinan dan dampak secara kuantitatif setelah langkah mitigasi ISO/COBIT diterapkan.
+   - **Penetapan Risk Owner:** Menunjuk otomatis unit kerja/personel penanggung jawab mitigasi (misal: Unit Operasional TI, Tim Legal, atau Vendor Pengelola).
+   - **Ekspor CSV Lengkap:** Ekspor data tabular mencakup seluruh atribut Inherent Risk, Residual Risk, Risk Owner, dan multi-sitasi regulasi.
 
 ---
 

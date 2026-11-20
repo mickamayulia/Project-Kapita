@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { 
   Sparkles, 
   Send, 
@@ -8,17 +8,17 @@ import {
   Save, 
   CheckCircle2, 
   BarChart3, 
-  AlertTriangle 
+  AlertTriangle,
+  Bot,
+  User,
+  ShieldCheck,
+  ChevronRight,
+  HelpCircle,
+  Eye,
+  FileCheck,
+  X,
+  Maximize2
 } from 'lucide-react';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  Tooltip, 
-  ResponsiveContainer, 
-  Cell 
-} from 'recharts';
 
 export default function AnalysisView({
   role,
@@ -32,463 +32,863 @@ export default function AnalysisView({
   handleExportCSV,
   handleExportJSON,
   handleSaveRegister,
+  handleSubmitToAdmin,
+  handleNewSession,
   saveSuccess,
-  chartData,
   handleViewDocument
 }) {
+  const chatEndRef = useRef(null);
+  const [showCanvas, setShowCanvas] = useState(true);
+
+  // Otomatis buka canvas saat ada hasil analisis baru
+  useEffect(() => {
+    if (currentResult) {
+      setShowCanvas(true);
+    }
+  }, [currentResult]);
+
+  // Auto-scroll chat ke paling bawah saat ada respon baru atau saat loading
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [currentResult, loading]);
+
+  const quickCases = [
+    { id: 'TC-01', label: 'Server Down 3x', text: 'Server aplikasi utama down 3x sebulan karena memori habis. Penumpang menumpuk di gate.' },
+    { id: 'TC-02', label: 'Password Default', text: 'Password admin server database bandara masih menggunakan bawaan pabrik dan belum pernah diganti vendor.' },
+    { id: 'TC-05', label: 'Vendor Lambat', text: 'Vendor IT tidak merespon insiden selama 5 jam, melanggar batas SLA kontrak 60 menit.' },
+    { id: 'TC-09', label: 'Kasus Ambigu', text: 'Sistem sering terasa lambat, kadang normal kadang tidak, staf sering bingung.' }
+  ];
+
+  const isSplitActive = currentResult && showCanvas;
+
   return (
-          <div className={currentResult ? "split-screen-grid" : ""}>
-            
-            {/* Left Panel */}
-            <div className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px', position: currentResult ? 'sticky' : 'static', top: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Sparkles size={16} color="var(--accent-cyan)" />
-                  <h2 style={{ fontSize: '0.95rem', fontWeight: 700 }}>
-                    {role === 'admin' ? 'Form Simulasi Uji Insiden' : 'Input Catatan Insiden Operasional'}
-                  </h2>
-                </div>
-                {role === 'admin' && (
-                  <select 
-                    value={selectedModel} 
-                    onChange={(e) => setSelectedModel(e.target.value)}
-                    style={{
-                      background: 'rgba(0,0,0,0.3)',
-                      color: '#cbd5e1',
-                      border: '1px solid var(--card-border)',
-                      borderRadius: '6px',
-                      padding: '3px 6px',
-                      fontSize: '0.72rem'
-                    }}
-                  >
-                    <option value="dots-studio/dots-3-note-preview:free">⚡ Dots 3 Note (Super Cepat ~0.5s / Free)</option>
-                    <option value="cohere/north-mini-code:free">⚡ Cohere North Mini (Cepat ~0.7s / Free)</option>
-                    <option value="nvidia/nemotron-3.5-lightning:free">Nvidia Nemotron 3.5 (Gratis)</option>
-                  </select>
-                )}
-              </div>
+    <div className={isSplitActive ? "copilot-workspace-grid" : ""} style={{
+      maxWidth: isSplitActive ? '100%' : '980px',
+      margin: isSplitActive ? '0' : '0 auto',
+      width: '100%',
+      transition: 'all 0.25s ease'
+    }}>
+      
+      {/* ========================================================= */}
+      {/* KOLOM KIRI: MODERN COPILOT CHAT STREAM                    */}
+      {/* ========================================================= */}
+      <div className={isSplitActive ? "copilot-chat-col glass-panel" : "glass-panel"} style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: 'calc(100vh - 96px)',
+        borderRadius: '16px',
+        overflow: 'hidden',
+        border: '1px solid rgba(255, 255, 255, 0.12)',
+        background: 'rgba(15, 23, 42, 0.85)'
+      }}>
+        
+        {/* Header Chat Stream */}
+        <div style={{
+          padding: '14px 18px',
+          borderBottom: '1px solid var(--card-border)',
+          background: 'rgba(255, 255, 255, 0.03)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #06b6d4, #3b82f6)',
+              padding: '6px',
+              borderRadius: '8px',
+              display: 'flex',
+              boxShadow: '0 4px 12px rgba(6, 182, 212, 0.25)'
+            }}>
+              <Bot size={18} color="white" />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '0.9rem', fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                RiskRegen Copilot
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10b981', display: 'inline-block' }}></span>
+              </h3>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                {role === 'admin' ? 'Mode Administrator & Testing' : 'Staf Operasional / Pelaporan'}
+              </span>
+            </div>
+          </div>
 
-              <textarea 
-                rows={7}
-                value={inputPrompt}
-                onChange={(e) => setInputPrompt(e.target.value)}
-                placeholder="Tuliskan catatan insiden/keluhan operasional..."
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {/* Tombol Mulai Kasus Insiden Baru */}
+            {currentResult && (
+              <button
+                type="button"
+                onClick={handleNewSession}
+                className="btn-secondary"
                 style={{
-                  width: '100%',
-                  background: 'rgba(0,0,0,0.35)',
-                  border: '1px solid var(--card-border)',
-                  borderRadius: '8px',
-                  padding: '10px',
-                  color: 'white',
-                  fontFamily: 'inherit',
-                  fontSize: '0.85rem',
-                  resize: 'vertical',
-                  outline: 'none'
+                  fontSize: '0.72rem',
+                  padding: '4px 10px',
+                  borderRadius: '6px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px'
                 }}
-              />
+                title="Buka sesi baru untuk analisis insiden lain"
+              >
+                <span>➕ Sesi Baru</span>
+              </button>
+            )}
 
-              <div>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>
-                  Uji Cepat (dari 17 Kasus Uji):
-                </span>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                  <button 
-                    type="button" 
-                    onClick={() => setInputPrompt('Server aplikasi utama down 3x sebulan karena memori habis.')}
-                    style={{ fontSize: '0.7rem', padding: '3px 6px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--card-border)', color: '#93c5fd', borderRadius: '4px' }}
-                  >
-                    TC-01: Server Down
-                  </button>
-                  <button 
-                    type="button" 
-                    onClick={() => setInputPrompt('Password admin server masih pakai bawaan pabrik.')}
-                    style={{ fontSize: '0.7rem', padding: '3px 6px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--card-border)', color: '#93c5fd', borderRadius: '4px' }}
-                  >
-                    TC-02: Password Default
-                  </button>
-                  <button 
-                    type="button" 
-                    onClick={() => setInputPrompt('Sistem sering error, kadang normal, tergantung beban.')}
-                    style={{ fontSize: '0.7rem', padding: '3px 6px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--card-border)', color: '#fcd34d', borderRadius: '4px' }}
-                  >
-                    TC-09: Ambigu (Null)
-                  </button>
+            {/* Tombol Buka Kembali Canvas jika sedang ditutup */}
+            {currentResult && !showCanvas && (
+              <button
+                type="button"
+                onClick={() => setShowCanvas(true)}
+                className="btn-secondary"
+                style={{
+                  fontSize: '0.72rem',
+                  padding: '4px 10px',
+                  background: 'rgba(6, 182, 212, 0.15)',
+                  borderColor: 'rgba(6, 182, 212, 0.4)',
+                  color: 'var(--accent-cyan)',
+                  borderRadius: '6px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px'
+                }}
+                title="Buka kembali tampilan Matriks & Register Canvas"
+              >
+                <Maximize2 size={13} />
+                <span>Buka Canvas ({currentResult.result?.daftar_risiko?.length || 0})</span>
+              </button>
+            )}
+
+            {/* Model Selector khusus Admin */}
+            {role === 'admin' && (
+              <select 
+                value={selectedModel} 
+                onChange={(e) => setSelectedModel(e.target.value)}
+                style={{
+                  background: 'rgba(0,0,0,0.4)',
+                  color: '#cbd5e1',
+                  border: '1px solid var(--card-border)',
+                  borderRadius: '6px',
+                  padding: '4px 8px',
+                  fontSize: '0.7rem',
+                  outline: 'none',
+                  maxWidth: '140px'
+                }}
+              >
+                <option value="dots-studio/dots-3-note-preview:free">⚡ Dots 3 Note</option>
+                <option value="cohere/north-mini-code:free">⚡ Cohere North</option>
+                <option value="nvidia/nemotron-3.5-lightning:free">Nvidia Nemotron</option>
+              </select>
+            )}
+          </div>
+        </div>
+
+        {/* Body Message Stream (Scrollable) */}
+        <div style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '18px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px'
+        }}>
+          
+          {/* Welcome Message dari AI */}
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+            <div style={{ background: 'rgba(6, 182, 212, 0.15)', border: '1px solid rgba(6, 182, 212, 0.3)', padding: '6px', borderRadius: '50%', flexShrink: 0 }}>
+              <Bot size={15} color="var(--accent-cyan)" />
+            </div>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.04)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '0 12px 12px 12px',
+              padding: '12px 14px',
+              fontSize: '0.82rem',
+              color: '#e2e8f0',
+              lineHeight: 1.5,
+              maxWidth: '90%'
+            }}>
+              Halo! Saya <strong>RiskRegen Assistant</strong>. Ceritakan insiden atau kendala operasional yang terjadi, saya akan:
+              <ul style={{ margin: '6px 0 0 16px', padding: 0, fontSize: '0.76rem', color: 'var(--text-muted)' }}>
+                <li>Mendeteksi rantai risiko multi-dimensi (ISO 31000)</li>
+                <li>Menghubungkan ke klausul regulasi resmi (RAG)</li>
+                <li>Menghitung Inherent Risk & Proyeksi Residual Target</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* User Message & Assistant Response jika ada hasil */}
+          {currentResult && (
+            <>
+              {/* Pesan User dengan Animasi Masuk */}
+              <div className="animate-user-chat" style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', alignSelf: 'flex-end', flexDirection: 'row-reverse' }}>
+                <div style={{ background: 'rgba(59, 130, 246, 0.2)', border: '1px solid rgba(59, 130, 246, 0.4)', padding: '6px', borderRadius: '50%', flexShrink: 0 }}>
+                  <User size={15} color="#60a5fa" />
+                </div>
+                <div style={{
+                  background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.35), rgba(30, 58, 138, 0.35))',
+                  border: '1px solid rgba(59, 130, 246, 0.35)',
+                  borderRadius: '12px 0 12px 12px',
+                  padding: '12px 14px',
+                  fontSize: '0.82rem',
+                  color: '#f8fafc',
+                  lineHeight: 1.5,
+                  maxWidth: '85%',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+                }}>
+                  {currentResult.userQuery || inputPrompt}
                 </div>
               </div>
 
+              {/* Jawaban Naratif & Status AI dengan Animasi Masuk */}
+              <div className="animate-ai-chat" style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                <div style={{ background: 'rgba(6, 182, 212, 0.15)', border: '1px solid rgba(6, 182, 212, 0.3)', padding: '6px', borderRadius: '50%', flexShrink: 0 }}>
+                  <Bot size={15} color="var(--accent-cyan)" />
+                </div>
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '0 12px 12px 12px',
+                  padding: '14px',
+                  fontSize: '0.82rem',
+                  color: '#e2e8f0',
+                  lineHeight: 1.5,
+                  maxWidth: '92%',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
+                }}>
+                  {/* Status Badge */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{
+                      fontSize: '0.68rem',
+                      fontWeight: 700,
+                      padding: '2px 8px',
+                      borderRadius: '4px',
+                      background: currentResult.result?.status === 'sukses' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                      color: currentResult.result?.status === 'sukses' ? '#34d399' : '#f87171'
+                    }}>
+                      {currentResult.result?.status === 'sukses' ? '✓ EKSTRAKSI LENGKAP' : '⚠ VERIFIKASI DIBUTUHKAN'}
+                    </span>
+                    <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                      {currentResult.modelUsed?.split('/')[1] || 'Free-Tier'}
+                    </span>
+                  </div>
+
+                  <p style={{ margin: '0 0 10px 0', fontSize: '0.82rem', color: '#f1f5f9' }}>
+                    {currentResult.result?.ringkasan}
+                  </p>
+
+                  {/* Callout Ringkasan Ekstraksi */}
+                  <div style={{
+                    background: 'rgba(15, 23, 42, 0.6)',
+                    border: '1px solid var(--card-border)',
+                    borderRadius: '8px',
+                    padding: '10px 12px',
+                    fontSize: '0.75rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '6px'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ color: 'var(--text-muted)' }}>Risiko Teridentifikasi:</span>
+                      <strong style={{ color: 'var(--accent-cyan)' }}>{currentResult.result?.daftar_risiko?.length || 0} butir</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ color: 'var(--text-muted)' }}>Kanvas Analisis:</span>
+                      <button
+                        type="button"
+                        onClick={() => setShowCanvas(!showCanvas)}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          color: '#38bdf8',
+                          cursor: 'pointer',
+                          fontWeight: 700,
+                          fontSize: '0.75rem',
+                          padding: 0,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}
+                      >
+                        {showCanvas ? 'Sembunyikan Kanvas ✕' : 'Tampilkan Kanvas Matriks ➔'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Loading Indicator Buble dengan Typing Dots Wave */}
+          {loading && (
+            <div className="animate-ai-chat" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <div style={{ background: 'rgba(6, 182, 212, 0.15)', padding: '6px', borderRadius: '50%' }}>
+                <Bot size={15} color="var(--accent-cyan)" />
+              </div>
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.04)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '0 12px 12px 12px',
+                padding: '10px 16px',
+                fontSize: '0.78rem',
+                color: '#93c5fd',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px'
+              }}>
+                <div style={{ display: 'inline-flex', gap: '4px', alignItems: 'center' }}>
+                  <span className="typing-dot" style={{ animationDelay: '0s' }}></span>
+                  <span className="typing-dot" style={{ animationDelay: '0.2s' }}></span>
+                  <span className="typing-dot" style={{ animationDelay: '0.4s' }}></span>
+                </div>
+                <span>Copilot sedang menganalisis regulasi RAG & menghitung matriks risiko...</span>
+              </div>
+            </div>
+          )}
+
+          <div ref={chatEndRef} />
+        </div>
+
+        {/* Input Bar & Preset Tags (Melayang di Bawah Panel) */}
+        <div style={{
+          padding: '14px',
+          borderTop: '1px solid var(--card-border)',
+          background: 'rgba(11, 15, 25, 0.85)'
+        }}>
+          {/* Quick Case Shortcut Chips */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto', marginBottom: '10px', paddingBottom: '4px' }}>
+            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+              Coba Kasus:
+            </span>
+            {quickCases.map(tc => (
+              <button
+                key={tc.id}
+                type="button"
+                onClick={() => setInputPrompt(tc.text)}
+                style={{
+                  fontSize: '0.68rem',
+                  padding: '3px 8px',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid var(--card-border)',
+                  color: '#93c5fd',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.background = 'rgba(59, 130, 246, 0.2)';
+                  e.currentTarget.style.borderColor = 'var(--accent-cyan)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                  e.currentTarget.style.borderColor = 'var(--card-border)';
+                }}
+              >
+                {tc.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Text Input Container Modern */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            background: 'rgba(0, 0, 0, 0.4)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            borderRadius: '12px',
+            padding: '8px 10px',
+            gap: '8px',
+            transition: 'border-color 0.2s'
+          }}>
+            <textarea 
+              rows={3}
+              value={inputPrompt}
+              onChange={(e) => setInputPrompt(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleAnalyze();
+                }
+              }}
+              placeholder="Ceritakan keluhan insiden (Tekan Enter untuk kirim)..."
+              style={{
+                width: '100%',
+                background: 'transparent',
+                border: 'none',
+                color: 'white',
+                fontFamily: 'inherit',
+                fontSize: '0.82rem',
+                resize: 'none',
+                outline: 'none',
+                lineHeight: 1.4
+              }}
+            />
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+                Shift + Enter untuk baris baru
+              </span>
               <button 
                 onClick={handleAnalyze}
                 disabled={loading || !inputPrompt.trim()}
                 className="btn-primary" 
-                style={{ justifyContent: 'center', marginTop: '10px' }}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '8px',
+                  fontSize: '0.78rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: loading ? '#4b5563' : 'linear-gradient(135deg, #06b6d4, #3b82f6)'
+                }}
               >
-                {loading ? <RefreshCw size={16} className="animate-spin" /> : <Send size={16} />}
-                {loading ? 'Menganalisis...' : 'Ekstrak Register Risiko'}
+                {loading ? <RefreshCw size={13} className="animate-spin" /> : <Send size={13} />}
+                {loading ? 'Memproses...' : 'Kirim Insiden'}
               </button>
             </div>
+          </div>
+        </div>
 
-            {/* Right Panel: Output & Charts */}
-            {currentResult && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                
-                {/* Header Summary & Action */}
-                <div className="glass-panel" style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      </div>
+
+      {/* ========================================================= */}
+      {/* KOLOM KANAN: EXECUTIVE WORKSPACE CANVAS (MATRIKS & TABEL) */}
+      {/* ========================================================= */}
+      {isSplitActive ? (
+        <div className="copilot-canvas-col" style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+          
+          {/* Top Bar Action (Simpan & Ekspor) */}
+          <div className="glass-panel" style={{
+            padding: '14px 18px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderRadius: '12px'
+          }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 800, margin: 0, color: 'white' }}>
+                  Executive Risk Register Canvas
+                </h3>
+                {/* Badge Status Draf */}
+                <span style={{
+                  fontSize: '0.66rem',
+                  padding: '2px 8px',
+                  borderRadius: '6px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  background: currentResult.status === 'approved' ? 'rgba(16, 185, 129, 0.2)' : currentResult.status === 'submitted' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+                  color: currentResult.status === 'approved' ? '#34d399' : currentResult.status === 'submitted' ? '#60a5fa' : '#fbbf24',
+                  border: `1px solid ${currentResult.status === 'approved' ? 'rgba(16, 185, 129, 0.3)' : currentResult.status === 'submitted' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`
+                }}>
+                  {currentResult.status === 'approved' ? 'Disahkan Final' : currentResult.status === 'submitted' ? 'Siap Ditinjau Admin' : 'Draf Berjalan'}
+                </span>
+              </div>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                Sesi ID: {currentResult.id} • Pelapor: {currentResult.author || 'Staf Operasional'}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <button className="btn-secondary" onClick={handleExportCSV} style={{ fontSize: '0.75rem', padding: '6px 12px' }} title="Ekspor Laporan Register Excel/CSV">
+                <Download size={13} /> Ekspor Excel/CSV
+              </button>
+              <button className="btn-secondary" onClick={handleExportJSON} style={{ fontSize: '0.75rem', padding: '6px 12px' }} title="Ekspor JSON Raw Data">
+                <FileText size={13} /> JSON
+              </button>
+
+              {/* Tombol Aksi Berdasarkan Peran (Role) */}
+              {role === 'user' && currentResult.status !== 'approved' && (
+                <button 
+                  onClick={handleSubmitToAdmin}
+                  disabled={currentResult.status === 'submitted'}
+                  className="btn-primary" 
+                  style={{
+                    fontSize: '0.75rem',
+                    padding: '6px 14px',
+                    background: currentResult.status === 'submitted' ? '#4b5563' : 'linear-gradient(135deg, #06b6d4, #3b82f6)'
+                  }}
+                  title="Kirimkan hasil analisis ke Administrator untuk disahkan"
+                >
+                  <Send size={13} /> 
+                  {currentResult.status === 'submitted' ? 'Sudah Diajukan ke Admin' : 'Ajukan ke Admin'}
+                </button>
+              )}
+
+              {role === 'admin' && (
+                <button 
+                  onClick={handleSaveRegister}
+                  className="btn-primary" 
+                  style={{
+                    fontSize: '0.75rem',
+                    padding: '6px 14px',
+                    background: saveSuccess ? '#059669' : 'linear-gradient(135deg, #10b981, #059669)'
+                  }}
+                  title="Sahkan register risiko ini ke database resmi organisasi (Lapis 5)"
+                >
+                  {saveSuccess ? <CheckCircle2 size={13} /> : <Save size={13} />} 
+                  {saveSuccess ? 'Tersimpan ke DB' : 'Sahkan Register (Lapis 5)'}
+                </button>
+              )}
+
+              {/* Tombol Tutup / Collapse Canvas */}
+              <button
+                type="button"
+                onClick={() => setShowCanvas(false)}
+                className="btn-secondary"
+                style={{
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  fontSize: '0.75rem',
+                  background: 'rgba(239, 68, 68, 0.15)',
+                  borderColor: 'rgba(239, 68, 68, 0.3)',
+                  color: '#f87171',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  marginLeft: '4px'
+                }}
+                title="Tutup Panel Canvas (Kembali ke Mode Chat Penuh)"
+              >
+                <X size={14} />
+                <span>Tutup</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Matriks 5x5 Interaktif Standar ISO */}
+          {currentResult.result?.daftar_risiko && currentResult.result.daftar_risiko.length > 0 && (
+            <div className="glass-panel" style={{ padding: '20px', borderRadius: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ background: 'rgba(59, 130, 246, 0.2)', padding: '6px', borderRadius: '8px' }}>
+                    <BarChart3 size={18} color="var(--accent-cyan)" />
+                  </div>
                   <div>
-                    <span style={{ 
-                      fontSize: '0.7rem', 
-                      padding: '2px 6px', 
-                      borderRadius: '4px', 
-                      fontWeight: 700,
-                      background: currentResult.result?.status === 'sukses' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-                      color: currentResult.result?.status === 'sukses' ? '#34d399' : '#f87171'
-                    }}>
-                      STATUS: {currentResult.result?.status ? currentResult.result.status.toUpperCase() : 'SELESAI'}
-                    </span>
-                    <p style={{ fontSize: '0.85rem', color: '#e2e8f0', marginTop: '4px' }}>
-                      {currentResult.result?.ringkasan}
+                    <h4 style={{ fontSize: '0.95rem', fontWeight: 700, margin: 0 }}>
+                      Matriks Distribusi Risiko 5 × 5
+                    </h4>
+                    <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', margin: 0 }}>
+                      Sebaran koordinat Likelihood (Kemungkinan) × Impact (Dampak).
                     </p>
                   </div>
-
-                  <div style={{ display: 'flex', gap: '6px' }}>
-                    <button className="btn-secondary" onClick={handleExportCSV} style={{ fontSize: '0.75rem', padding: '6px 10px' }}>
-                      <Download size={14} /> CSV
-                    </button>
-                    <button className="btn-secondary" onClick={handleExportJSON} style={{ fontSize: '0.75rem', padding: '6px 10px' }}>
-                      <FileText size={14} /> JSON
-                    </button>
-                    <button 
-                      onClick={handleSaveRegister}
-                      className="btn-primary" 
-                      style={{ fontSize: '0.75rem', padding: '6px 12px', background: saveSuccess ? '#059669' : undefined }}
-                    >
-                      {saveSuccess ? <CheckCircle2 size={14} /> : <Save size={14} />} 
-                      {saveSuccess ? 'Tersimpan (Final)' : 'Simpan Register'}
-                    </button>
-                  </div>
                 </div>
 
-                {/* Peta Matriks Distribusi Risiko 5x5 Interaktif per ID Risiko */}
-                {currentResult.result?.daftar_risiko && currentResult.result.daftar_risiko.length > 0 && (
-                  <div className="glass-panel" style={{ padding: '18px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <div style={{ background: 'rgba(59, 130, 246, 0.2)', padding: '6px', borderRadius: '8px' }}>
-                          <BarChart3 size={18} color="var(--accent-cyan)" />
-                        </div>
-                        <div>
-                          <h4 style={{ fontSize: '0.95rem', fontWeight: 700, margin: 0 }}>
-                            Pemetaan Distribusi Matriks Risiko (5 × 5)
-                          </h4>
-                          <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', margin: 0 }}>
-                            Pemetaan posisi setiap ID Risiko berdasarkan Likelihood (Kemungkinan) × Impact (Dampak).
-                          </p>
-                        </div>
-                      </div>
+                {/* Legenda Warna */}
+                <div style={{ display: 'flex', gap: '8px', fontSize: '0.7rem', flexWrap: 'wrap' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '3px 8px', borderRadius: '4px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#f87171' }}>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444' }}></span> Tinggi (15-25)
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '3px 8px', borderRadius: '4px', background: 'rgba(245, 158, 11, 0.15)', border: '1px solid rgba(245, 158, 11, 0.3)', color: '#fbbf24' }}>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f59e0b' }}></span> Sedang (7-14)
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '3px 8px', borderRadius: '4px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#34d399' }}>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981' }}></span> Rendah (1-6)
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '3px 8px', borderRadius: '4px', background: 'rgba(107, 114, 128, 0.15)', border: '1px solid rgba(107, 114, 128, 0.3)', color: '#9ca3af' }}>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#6b7280' }}></span> Perlu Verifikasi
+                  </span>
+                </div>
+              </div>
 
-                      {/* Legenda Warna */}
-                      <div style={{ display: 'flex', gap: '8px', fontSize: '0.7rem', flexWrap: 'wrap' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '3px 8px', borderRadius: '4px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#f87171' }}>
-                          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444' }}></span> Tinggi (15-25)
-                        </span>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '3px 8px', borderRadius: '4px', background: 'rgba(245, 158, 11, 0.15)', border: '1px solid rgba(245, 158, 11, 0.3)', color: '#fbbf24' }}>
-                          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f59e0b' }}></span> Sedang (7-14)
-                        </span>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '3px 8px', borderRadius: '4px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#34d399' }}>
-                          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981' }}></span> Rendah (1-6)
-                        </span>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '3px 8px', borderRadius: '4px', background: 'rgba(107, 114, 128, 0.15)', border: '1px solid rgba(107, 114, 128, 0.3)', color: '#9ca3af' }}>
-                          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#6b7280' }}></span> Perlu Verifikasi
-                        </span>
-                      </div>
+              <div className="matrix-grid-responsive">
+                {/* Grid Matriks 5x5 */}
+                <div style={{ overflowX: 'auto' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ 
+                      writingMode: 'vertical-rl', 
+                      transform: 'rotate(180deg)', 
+                      fontSize: '0.72rem', 
+                      fontWeight: 700, 
+                      color: 'var(--accent-cyan)',
+                      letterSpacing: '1px',
+                      textAlign: 'center'
+                    }}>
+                      ▲ IMPACT (DAMPAK)
                     </div>
 
-                    <div className="matrix-grid-responsive">
-                      {/* Grid Matriks 5x5 */}
-                      <div style={{ overflowX: 'auto' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          {/* Sumbu Y Label: Impact */}
-                          <div style={{ 
-                            writingMode: 'vertical-rl', 
-                            transform: 'rotate(180deg)', 
-                            fontSize: '0.72rem', 
-                            fontWeight: 700, 
-                            color: 'var(--accent-cyan)',
-                            letterSpacing: '1px',
-                            textAlign: 'center'
-                          }}>
-                            ▲ IMPACT (DAMPAK)
-                          </div>
+                    <div style={{ flex: 1, minWidth: '280px' }}>
+                      <div style={{ display: 'grid', gridTemplateRows: 'repeat(5, 1fr)', gap: '4px' }}>
+                        {[5, 4, 3, 2, 1].map((impactVal) => (
+                          <div key={impactVal} style={{ display: 'grid', gridTemplateColumns: '32px repeat(5, 1fr)', gap: '4px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#9ca3af', textAlign: 'center' }}>
+                              I = {impactVal}
+                            </span>
 
-                          <div style={{ flex: 1, minWidth: '280px' }}>
-                            <div style={{ display: 'grid', gridTemplateRows: 'repeat(5, 1fr)', gap: '4px' }}>
-                              {[5, 4, 3, 2, 1].map((impactVal) => (
-                                <div key={impactVal} style={{ display: 'grid', gridTemplateColumns: '32px repeat(5, 1fr)', gap: '4px', alignItems: 'center' }}>
-                                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#9ca3af', textAlign: 'center' }}>
-                                    I = {impactVal}
+                            {[1, 2, 3, 4, 5].map((likelihoodVal) => {
+                              const cellScore = likelihoodVal * impactVal;
+                              let cellBg = 'rgba(16, 185, 129, 0.08)';
+                              let cellBorder = 'rgba(16, 185, 129, 0.2)';
+                              if (cellScore >= 15) {
+                                cellBg = 'rgba(239, 68, 68, 0.12)';
+                                cellBorder = 'rgba(239, 68, 68, 0.3)';
+                              } else if (cellScore >= 7) {
+                                cellBg = 'rgba(245, 158, 11, 0.1)';
+                                cellBorder = 'rgba(245, 158, 11, 0.25)';
+                              }
+
+                              const risksInCell = currentResult.result.daftar_risiko.filter(
+                                r => Number(r.likelihood) === likelihoodVal && Number(r.impact) === impactVal
+                              );
+
+                              return (
+                                <div
+                                  key={likelihoodVal}
+                                  style={{
+                                    height: '56px',
+                                    background: cellBg,
+                                    border: `1px solid ${cellBorder}`,
+                                    borderRadius: '6px',
+                                    padding: '4px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'space-between',
+                                    position: 'relative'
+                                  }}
+                                >
+                                  <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.25)', fontWeight: 700 }}>
+                                    {cellScore}
                                   </span>
 
-                                  {[1, 2, 3, 4, 5].map((likelihoodVal) => {
-                                    const cellScore = likelihoodVal * impactVal;
-                                    let cellBg = 'rgba(16, 185, 129, 0.08)'; // Rendah
-                                    let cellBorder = 'rgba(16, 185, 129, 0.2)';
-                                    if (cellScore >= 15) {
-                                      cellBg = 'rgba(239, 68, 68, 0.12)'; // Tinggi
-                                      cellBorder = 'rgba(239, 68, 68, 0.3)';
-                                    } else if (cellScore >= 7) {
-                                      cellBg = 'rgba(245, 158, 11, 0.1)'; // Sedang
-                                      cellBorder = 'rgba(245, 158, 11, 0.25)';
-                                    }
-
-                                    // Ambil risiko yang menempati sel ini
-                                    const risksInCell = currentResult.result.daftar_risiko.filter(
-                                      r => Number(r.likelihood) === likelihoodVal && Number(r.impact) === impactVal
-                                    );
-
-                                    return (
-                                      <div
-                                        key={likelihoodVal}
+                                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px', overflowY: 'auto', maxHeight: '34px' }}>
+                                    {risksInCell.map(r => (
+                                      <span
+                                        key={r.id}
+                                        title={`${r.id}: ${r.deskripsi}`}
                                         style={{
-                                          background: cellBg,
-                                          border: `1px solid ${cellBorder}`,
-                                          borderRadius: '6px',
-                                          minHeight: '44px',
-                                          padding: '4px',
-                                          display: 'flex',
-                                          flexDirection: 'column',
-                                          alignItems: 'center',
-                                          justifyContent: 'center',
-                                          gap: '3px',
-                                          position: 'relative'
+                                          fontSize: '0.62rem',
+                                          fontWeight: 800,
+                                          padding: '1px 4px',
+                                          borderRadius: '3px',
+                                          background: cellScore >= 15 ? '#ef4444' : cellScore >= 7 ? '#f59e0b' : '#10b981',
+                                          color: 'white',
+                                          fontFamily: 'var(--font-mono)'
                                         }}
                                       >
-                                        <span style={{ position: 'absolute', top: 2, right: 3, fontSize: '0.55rem', color: '#64748b' }}>
-                                          {cellScore}
-                                        </span>
-
-                                        {/* Pin/Badge untuk setiap ID Risiko */}
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px', justifyContent: 'center' }}>
-                                          {risksInCell.map(r => {
-                                            const badgeColor = r.tingkat === 'tinggi' ? '#ef4444' : r.tingkat === 'sedang' ? '#f59e0b' : '#10b981';
-                                            return (
-                                              <span
-                                                key={r.id}
-                                                title={`${r.id}: ${r.deskripsi} (Skor: ${r.skor || cellScore})`}
-                                                style={{
-                                                  fontSize: '0.65rem',
-                                                  fontWeight: 800,
-                                                  background: badgeColor,
-                                                  color: '#ffffff',
-                                                  padding: '1px 5px',
-                                                  borderRadius: '4px',
-                                                  boxShadow: `0 0 6px ${badgeColor}66`,
-                                                  cursor: 'pointer'
-                                                }}
-                                              >
-                                                {r.id}
-                                              </span>
-                                            );
-                                          })}
-                                        </div>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              ))}
-                            </div>
-
-                            {/* Sumbu X Label: Likelihood */}
-                            <div style={{ display: 'grid', gridTemplateColumns: '32px repeat(5, 1fr)', gap: '4px', marginTop: '6px' }}>
-                              <span></span>
-                              {[1, 2, 3, 4, 5].map(l => (
-                                <span key={l} style={{ fontSize: '0.72rem', fontWeight: 700, color: '#9ca3af', textAlign: 'center' }}>
-                                  L = {l}
-                                </span>
-                              ))}
-                            </div>
-                            <div style={{ textAlign: 'center', fontSize: '0.72rem', fontWeight: 700, color: 'var(--accent-cyan)', marginTop: '4px', letterSpacing: '1px' }}>
-                              LIKELIHOOD (KEMUNGKINAN) ►
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Risiko Perlu Verifikasi (Ambigu / Null) */}
-                        {(() => {
-                          const unverified = currentResult.result.daftar_risiko.filter(
-                            r => r.likelihood == null || r.impact == null || r.tingkat === 'perlu_verifikasi'
-                          );
-                          if (unverified.length === 0) return null;
-                          return (
-                            <div style={{ marginTop: '12px', padding: '8px 12px', background: 'rgba(107, 114, 128, 0.12)', border: '1px dashed rgba(156, 163, 175, 0.3)', borderRadius: '6px' }}>
-                              <span style={{ fontSize: '0.72rem', color: '#cbd5e1', fontWeight: 600 }}>
-                                ⚠️ Risiko Tanpa Titik Matriks Pasti (Perlu Verifikasi Data):
-                              </span>
-                              <div style={{ display: 'inline-flex', gap: '6px', marginLeft: '8px' }}>
-                                {unverified.map(r => (
-                                  <span key={r.id} style={{ fontSize: '0.65rem', background: '#4b5563', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                                    {r.id} (Ambigu)
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          );
-                        })()}
-                      </div>
-
-                      {/* Bar Ringkasan & Panduan Lokasi ID */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <div style={{ background: 'rgba(17, 24, 39, 0.6)', border: '1px solid var(--card-border)', borderRadius: '8px', padding: '10px' }}>
-                          <h5 style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', marginBottom: '8px' }}>
-                            Daftar Titik Sebaran per ID:
-                          </h5>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '180px', overflowY: 'auto' }}>
-                            {currentResult.result.daftar_risiko.map(r => {
-                              const badgeColor = r.tingkat === 'tinggi' ? '#ef4444' : r.tingkat === 'sedang' ? '#f59e0b' : r.tingkat === 'rendah' ? '#10b981' : '#6b7280';
-                              return (
-                                <div key={r.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.72rem', padding: '4px 6px', borderRadius: '4px', background: 'rgba(255,255,255,0.02)' }}>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
-                                    <span style={{ background: badgeColor, color: '#fff', padding: '1px 5px', borderRadius: '3px', fontWeight: 800, fontSize: '0.65rem' }}>
-                                      {r.id}
-                                    </span>
-                                    <span style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '140px', color: '#e2e8f0' }}>
-                                      {r.deskripsi}
-                                    </span>
+                                        {r.id}
+                                      </span>
+                                    ))}
                                   </div>
-                                  <span style={{ fontWeight: 700, color: badgeColor, fontFamily: 'var(--font-mono)' }}>
-                                    {r.likelihood !== null ? `(L${r.likelihood}, I${r.impact})` : 'Perlu Verifikasi'}
-                                  </span>
                                 </div>
                               );
                             })}
                           </div>
-                        </div>
+                        ))}
+                      </div>
 
-                        {/* Chart Ringkasan Kecil */}
-                        <div style={{ width: '100%', height: 110 }}>
-                          <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 10, left: 10, bottom: 0 }}>
-                              <XAxis type="number" stroke="#6b7280" fontSize={10} />
-                              <YAxis type="category" dataKey="name" stroke="#9ca3af" fontSize={10} width={100} />
-                              <Tooltip contentStyle={{ background: '#111827', borderColor: '#374151', fontSize: '0.75rem' }} />
-                              <Bar dataKey="count" radius={[0, 4, 4, 0]}>
-                                {chartData.map((entry, index) => (
-                                  <Cell key={'cell-' + index} fill={entry.color} />
-                                ))}
-                              </Bar>
-                            </BarChart>
-                          </ResponsiveContainer>
-                        </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '32px repeat(5, 1fr)', gap: '4px', marginTop: '6px' }}>
+                        <span></span>
+                        {[1, 2, 3, 4, 5].map(l => (
+                          <span key={l} style={{ fontSize: '0.72rem', fontWeight: 700, color: '#9ca3af', textAlign: 'center' }}>
+                            L = {l}
+                          </span>
+                        ))}
+                      </div>
+                      <div style={{ textAlign: 'center', fontSize: '0.72rem', fontWeight: 700, color: 'var(--accent-cyan)', marginTop: '4px', letterSpacing: '1px' }}>
+                        LIKELIHOOD (KEMUNGKINAN) ►
                       </div>
                     </div>
                   </div>
-                )}
 
-                {/* Table */}
-                <div className="glass-panel" style={{ padding: '16px', overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8rem' }}>
-                    <thead>
-                      <tr style={{ borderBottom: '1px solid var(--card-border)', color: 'var(--text-muted)' }}>
-                        <th style={{ padding: '8px' }}>ID</th>
-                        <th style={{ padding: '8px' }}>Deskripsi</th>
-                        <th style={{ padding: '8px' }}>Kategori</th>
-                        <th style={{ padding: '8px', textAlign: 'center' }}>L × I</th>
-                        <th style={{ padding: '8px', textAlign: 'center' }}>Skor</th>
-                        <th style={{ padding: '8px' }}>Tingkat</th>
-                        <th style={{ padding: '8px' }}>Mitigasi</th>
-                        <th style={{ padding: '8px' }}>Pemilik</th>
-                        <th style={{ padding: '8px' }}>Sumber</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {currentResult.result?.daftar_risiko && currentResult.result.daftar_risiko.map((r, i) => (
-                        <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                          <td style={{ padding: '10px 8px', fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)' }}>{r.id}</td>
-                          <td style={{ padding: '10px 8px', maxWidth: '220px' }}>{r.deskripsi}</td>
-                          <td style={{ padding: '10px 8px' }}>{r.kategori}</td>
-                          <td style={{ padding: '10px 8px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}>
-                            {r.likelihood !== null ? (r.likelihood + ' × ' + r.impact) : '-'}
-                          </td>
-                          <td style={{ padding: '10px 8px', textAlign: 'center', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
-                            {r.skor !== null ? r.skor : '-'}
-                          </td>
-                          <td style={{ padding: '10px 8px' }}>
-                            <span style={{ 
-                              padding: '2px 6px', 
-                              borderRadius: '4px', 
-                              fontSize: '0.7rem', 
-                              fontWeight: 700,
-                              background: r.tingkat === 'tinggi' ? 'rgba(239, 68, 68, 0.2)' : r.tingkat === 'sedang' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.2)',
-                              color: r.tingkat === 'tinggi' ? '#f87171' : r.tingkat === 'sedang' ? '#fbbf24' : '#34d399'
-                            }}>
-                              {r.tingkat ? r.tingkat.toUpperCase() : ''}
+                  {/* Risiko Tanpa Titik Matriks Pasti */}
+                  {(() => {
+                    const unverified = currentResult.result.daftar_risiko.filter(
+                      r => r.likelihood == null || r.impact == null || r.tingkat === 'perlu_verifikasi'
+                    );
+                    if (unverified.length === 0) return null;
+                    return (
+                      <div style={{ marginTop: '12px', padding: '8px 12px', background: 'rgba(107, 114, 128, 0.12)', border: '1px dashed rgba(156, 163, 175, 0.3)', borderRadius: '6px' }}>
+                        <span style={{ fontSize: '0.72rem', color: '#cbd5e1', fontWeight: 600 }}>
+                          ⚠️ Risiko Tanpa Titik Matriks Pasti (Perlu Verifikasi Data):
+                        </span>
+                        <div style={{ display: 'inline-flex', gap: '6px', marginLeft: '8px' }}>
+                          {unverified.map(r => (
+                            <span key={r.id} style={{ fontSize: '0.65rem', background: '#4b5563', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                              {r.id} (Ambigu)
                             </span>
-                          </td>
-                          <td style={{ padding: '10px 8px', maxWidth: '200px' }}>
-                            {r.mitigasi === 'Tidak ditemukan di dokumen rujukan' ? (
-                              <span style={{ color: '#f87171', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <AlertTriangle size={12} /> {r.mitigasi}
-                              </span>
-                            ) : r.mitigasi}
-                          </td>
-                          <td style={{ padding: '10px 8px', color: 'var(--text-muted)' }}>{r.pemilik}</td>
-                          <td style={{ padding: '10px 8px', maxWidth: '280px' }}>
-                            {r.sumber && r.sumber.map((s, idx) => {
-                              const isObj = typeof s === 'object' && s !== null;
-                              const docName = isObj ? s.dokumen : s;
-                              const section = isObj ? s.bagian : null;
-                              const quote = isObj ? s.kutipan : null;
-
-                              return (
-                                <div 
-                                  key={idx} 
-                                  onClick={() => handleViewDocument(docName)}
-                                  style={{ 
-                                    marginBottom: '6px', 
-                                    background: 'rgba(59, 130, 246, 0.08)', 
-                                    border: '1px solid rgba(59, 130, 246, 0.2)', 
-                                    borderRadius: '6px', 
-                                    padding: '6px 8px',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.15s ease'
-                                  }}
-                                  onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--accent-cyan)'}
-                                  onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.2)'}
-                                  title="Klik untuk membaca dokumen rujukan ini"
-                                >
-                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px' }}>
-                                    <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#93c5fd' }}>
-                                      📚 {docName} ↗
-                                    </span>
-                                    {section && (
-                                      <span style={{ fontSize: '0.65rem', color: '#c084fc', background: 'rgba(139, 92, 246, 0.15)', padding: '1px 5px', borderRadius: '3px' }}>
-                                        {section}
-                                      </span>
-                                    )}
-                                  </div>
-                                  {quote && (
-                                    <p style={{ 
-                                      fontSize: '0.68rem', 
-                                      color: '#cbd5e1', 
-                                      fontStyle: 'italic', 
-                                      marginTop: '4px', 
-                                      borderLeft: '2px solid var(--accent-cyan)', 
-                                      paddingLeft: '6px',
-                                      lineHeight: 1.3 
-                                    }}>
-                                      "{quote}"
-                                    </p>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
 
+                {/* Panel Samping Lokasi ID */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ background: 'rgba(17, 24, 39, 0.6)', border: '1px solid var(--card-border)', borderRadius: '8px', padding: '12px' }}>
+                    <h5 style={{ fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', marginBottom: '10px' }}>
+                      Posisi ID Risiko di Matriks:
+                    </h5>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '280px', overflowY: 'auto' }}>
+                      {currentResult.result.daftar_risiko.map(r => {
+                        const badgeColor = r.tingkat === 'tinggi' ? '#ef4444' : r.tingkat === 'sedang' ? '#f59e0b' : r.tingkat === 'rendah' ? '#10b981' : '#6b7280';
+                        return (
+                          <div key={r.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.72rem', padding: '6px 8px', borderRadius: '6px', background: 'rgba(255,255,255,0.03)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
+                              <span style={{ background: badgeColor, color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 800, fontSize: '0.68rem' }}>
+                                {r.id}
+                              </span>
+                              <span style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '140px', color: '#e2e8f0', fontWeight: 500 }}>
+                                {r.deskripsi}
+                              </span>
+                            </div>
+                            <span style={{ fontWeight: 700, color: badgeColor, fontFamily: 'var(--font-mono)' }}>
+                              {r.likelihood !== null ? `(L${r.likelihood}, I${r.impact})` : 'Perlu Verifikasi'}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
               </div>
-            )}
+            </div>
+          )}
+
+          {/* Tabel Register Risiko Formal (Resiko.ai Standard) */}
+          <div className="glass-panel" style={{ padding: '18px', width: '100%', maxWidth: '100%', borderRadius: '14px', overflowX: 'hidden' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'white' }}>
+                  Daftar Register Risiko Formal
+                </span>
+                <span style={{ fontSize: '0.68rem', background: 'rgba(59, 130, 246, 0.2)', color: '#93c5fd', padding: '2px 8px', borderRadius: '4px' }}>
+                  Standar ERM / Resiko.ai
+                </span>
+              </div>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                Inherent: Risiko Awal | Residual: Target Pasca-Mitigasi
+              </span>
+            </div>
+
+            <div style={{ width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.78rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--card-border)', color: 'var(--text-muted)' }}>
+                  <th style={{ padding: '8px' }}>ID</th>
+                  <th style={{ padding: '8px' }}>Pernyataan Risiko</th>
+                  <th style={{ padding: '8px' }}>Kategori</th>
+                  <th style={{ padding: '8px', textAlign: 'center' }}>Inherent (L×I)</th>
+                  <th style={{ padding: '8px', textAlign: 'center' }}>Skor Awal</th>
+                  <th style={{ padding: '8px', textAlign: 'center' }}>Residual Target</th>
+                  <th style={{ padding: '8px' }}>Rencana Mitigasi</th>
+                  <th style={{ padding: '8px' }}>Risk Owner</th>
+                  <th style={{ padding: '8px' }}>Rujukan Regulasi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentResult.result?.daftar_risiko && currentResult.result.daftar_risiko.map((r, i) => (
+                  <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                    <td style={{ padding: '10px 8px', fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)' }}>{r.id}</td>
+                    <td style={{ padding: '10px 8px', maxWidth: '190px', lineHeight: 1.4 }}>{r.deskripsi}</td>
+                    <td style={{ padding: '10px 8px' }}>
+                      <span style={{ fontSize: '0.68rem', background: 'rgba(255,255,255,0.06)', padding: '2px 6px', borderRadius: '4px' }}>
+                        {r.kategori}
+                      </span>
+                    </td>
+                    <td style={{ padding: '10px 8px', textAlign: 'center', fontFamily: 'var(--font-mono)' }}>
+                      {r.likelihood !== null ? `${r.likelihood} × ${r.impact}` : '-'}
+                    </td>
+                    <td style={{ padding: '10px 8px', textAlign: 'center' }}>
+                      <span style={{ 
+                        padding: '2px 6px', 
+                        borderRadius: '4px', 
+                        fontSize: '0.68rem', 
+                        fontWeight: 700,
+                        background: r.tingkat === 'tinggi' ? 'rgba(239, 68, 68, 0.2)' : r.tingkat === 'sedang' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+                        color: r.tingkat === 'tinggi' ? '#f87171' : r.tingkat === 'sedang' ? '#fbbf24' : '#34d399'
+                      }}>
+                        {r.skor !== null ? `${r.skor} (${r.tingkat ? r.tingkat.toUpperCase() : ''})` : 'Perlu Verifikasi'}
+                      </span>
+                    </td>
+                    <td style={{ padding: '10px 8px', textAlign: 'center' }}>
+                      {r.residualSkor !== null && r.residualSkor !== undefined ? (
+                        <span style={{ 
+                          padding: '2px 6px', 
+                          borderRadius: '4px', 
+                          fontSize: '0.68rem', 
+                          fontWeight: 700,
+                          background: r.residualTingkat === 'tinggi' ? 'rgba(239, 68, 68, 0.2)' : r.residualTingkat === 'sedang' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+                          color: r.residualTingkat === 'tinggi' ? '#f87171' : r.residualTingkat === 'sedang' ? '#fbbf24' : '#34d399'
+                        }}>
+                          {r.residualLikelihood}×{r.residualImpact} = {r.residualSkor}
+                        </span>
+                      ) : (
+                        <span style={{ color: 'var(--text-muted)' }}>-</span>
+                      )}
+                    </td>
+                    <td style={{ padding: '10px 8px', maxWidth: '200px', lineHeight: 1.4 }}>
+                      {r.mitigasi === 'Tidak ditemukan di dokumen rujukan' ? (
+                        <span style={{ color: '#f87171', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <AlertTriangle size={12} /> {r.mitigasi}
+                        </span>
+                      ) : r.mitigasi}
+                    </td>
+                    <td style={{ padding: '10px 8px', color: '#93c5fd', fontWeight: 600 }}>
+                      {r.risk_owner || r.pemilik || 'Unit Operasional TI'}
+                    </td>
+                    <td style={{ padding: '10px 8px', maxWidth: '250px' }}>
+                      {r.sumber && r.sumber.map((s, idx) => {
+                        const isObj = typeof s === 'object' && s !== null;
+                        const docName = isObj ? s.dokumen : s;
+                        const section = isObj ? s.bagian : null;
+                        const quote = isObj ? s.kutipan : null;
+
+                        return (
+                          <div 
+                            key={idx} 
+                            onClick={() => handleViewDocument(docName)}
+                            style={{ 
+                              marginBottom: '5px', 
+                              background: 'rgba(59, 130, 246, 0.08)', 
+                              border: '1px solid rgba(59, 130, 246, 0.2)', 
+                              borderRadius: '6px', 
+                              padding: '5px 7px',
+                              cursor: 'pointer',
+                              transition: 'all 0.15s ease'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--accent-cyan)'}
+                            onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.2)'}
+                            title="Klik untuk membaca dokumen rujukan ini"
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px' }}>
+                              <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#93c5fd' }}>
+                                📚 {docName} ↗
+                              </span>
+                              {section && (
+                                <span style={{ fontSize: '0.62rem', color: '#c084fc', background: 'rgba(139, 92, 246, 0.15)', padding: '1px 4px', borderRadius: '3px' }}>
+                                  {section}
+                                </span>
+                              )}
+                            </div>
+                            {quote && (
+                              <p style={{ 
+                                fontSize: '0.66rem', 
+                                color: '#cbd5e1', 
+                                fontStyle: 'italic', 
+                                marginTop: '3px', 
+                                borderLeft: '2px solid var(--accent-cyan)', 
+                                paddingLeft: '5px',
+                                lineHeight: 1.3 
+                              }}>
+                                "{quote}"
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            </div>
           </div>
+
+        </div>
+      ) : null}
+
+    </div>
   );
 }
