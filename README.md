@@ -102,8 +102,16 @@ Project-Kapita/
 │   │   └── uploads/                    <- File fisik PDF/dokumen rujukan
 │   ├── frontend/                       <- Web UI React + Vite + Recharts
 │   │   └── src/
-│   │       ├── App.jsx                 <- Komponen UI, Matriks 5x5 interaktif
-│   │       └── index.css               <- Styling responsive & glassmorphism
+│   │       ├── App.jsx                 <- State controller & router peran (User/Admin)
+│   │       ├── index.css               <- Styling responsive & glassmorphism
+│   │       └── components/             <- Pemisahan komponen antarmuka modular
+│   │           ├── LoginPortal.jsx     <- Portal login peran (Staf vs Admin + 1-klik)
+│   │           ├── Navbar.jsx          <- Navbar atas, badge peran, & kontrol logout
+│   │           ├── AnalysisView.jsx    <- Form analisis insiden & matriks 5x5
+│   │           ├── RecordsView.jsx     <- Draf laporan staf & Master Register admin
+│   │           ├── AdminDocsView.jsx   <- Knowledge base & upload dokumen acuan RAG
+│   │           ├── SettingsView.jsx    <- Konfigurasi API OpenRouter & model default
+│   │           └── DocumentModal.jsx   <- Modal baca dokumen rujukan & toast popup
 │   ├── instruksi/
 │   │   ├── v1.md                       <- System prompt awal baseline
 │   │   ├── v2.md                       <- System prompt terstruktur + few-shot
@@ -150,6 +158,10 @@ Project-Kapita/
    Jika input deskriptif tidak memuat indikator waktu/frekuensi kuantitatif, nilai likelihood & impact wajib diset `null` dan berstatus `perlu_verifikasi`. Sistem menolak menebak angka tanpa bukti.
 5. **Lima Lapis Pertahanan Keamanan (Defense-in-Depth):**
    Input Sanitizer (HTTP 403) $\rightarrow$ Strict Prompt Boundary $\rightarrow$ Sandboxed Read-Only Tools $\rightarrow$ JSON Schema Retry Loop $\rightarrow$ Human-in-the-Loop Approval Gate.
+6. **Pemisahan Peran & Portal Autentikasi Pengguna (Role-Based Access):**
+   - **Staf / User Portal:** Antarmuka bersih tanpa konfigurasi teknis rumit, difokuskan pada input insiden operasional, simulasi matriks 5×5, dan penyimpanan draf.
+   - **Administrator Portal:** Dilengkapi otentikasi PIN/Password (`admin123`), akses pengelolaan *Knowledge Base* dokumen acuan RAG, manajemen master register seluruh organisasi, serta pengaturan API gateway LLM.
+   - **Mode Demo Cepat (1-Klik):** Tersedia tombol pintas instan untuk demo pengujian di depan dosen tanpa perlu mengetik kredensial manual.
 
 ---
 
