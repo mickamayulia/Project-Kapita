@@ -1,4 +1,4 @@
-﻿# KAJIAN RISIKO, BIAS, DAN PERNYATAAN ETIS PROFESIONAL
+# KAJIAN RISIKO, BIAS, DAN PERNYATAAN ETIS PROFESIONAL
 ## Produk: Aviako Risk Register Assistant (RiskRegen)
 **Penyusun / NIM / K:** Micka Mayulia Utama / 10231053 / 5  
 **Modul Acuan:** Minggu 15 (Blok E — Kematangan)
@@ -73,6 +73,10 @@ Setiap sesi analisis pada antarmuka pengguna memuat catatan peringatan:
    *Alasan:* Ketergantungan pada API OpenRouter cloud diterima demi fleksibilitas komparasi multi-model tanpa beban biaya server GPU lokal ratusan juta rupiah.
 2. **Risiko Pemenggalan Istilah Sangat Baru (*Zero-day Vulnerability*):**  
    *Alasan:* Dokumen rujukan ISO/NIST statis tidak memuat kerentanan keamanan perangkat lunak yang baru dirilis kemarin sore. Risiko ini diterima dan dimitigasi dengan kewajiban review manusia.
+3. **Risiko Inkonsistensi Penilaian pada Insiden Serupa (Tertangani via Official Risk Reuse):**  
+   *Alasan:* Sebelumnya, insiden berulang bisa menghasilkan pembobotan $L \times I$ berbeda karena variasi probabilistik LLM. Kini dimitigasi secara terstruktur melalui fitur *Official Risk Reuse* yang mengunci mitigasi dan skor baku yang telah disahkan manajemen.
+4. **Risiko Pencemaran Data Audit oleh Draf Mentah (Tertangani via User Draft Isolation):**  
+   *Alasan:* Percobaan obrolan staf lapangan sempat berpotensi membanjiri antrean verifikasi manajer. Kini dimitigasi secara arsitektural dengan membatasi inbox admin hanya untuk tiket yang berstatus `submitted` (diajukan sadar).
 
 ---
 

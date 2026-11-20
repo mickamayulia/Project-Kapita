@@ -1,4 +1,4 @@
-﻿# DOKUMENTASI TOOL & BATASAN AKSES
+# DOKUMENTASI TOOL & BATASAN AKSES
 ## Produk: Aviako Risk Register Assistant (RiskRegen)
 **Target CPMK:** Sub-CPMK-2, Sub-CPMK-4, Sub-CPMK-6 (Blok B & Blok D)
 
@@ -51,17 +51,25 @@ Setiap tool harus memiliki aturan tertulis mengenai kegunaan, parameter, kapan *
 
 ---
 
-### Tool 4: `simpan_register_risiko` (Human-in-the-Loop)
-- **Kegunaan:** Menyimpan data register risiko final yang telah diverifikasi ke dalam basis data register organisasi permanen (`registers.json`).
+### Tool 4: `simpan_register_risiko` (Human-in-the-Loop & Governance Finalization)
+- **Kegunaan:** Menyimpan data register risiko final yang telah diverifikasi dan disahkan oleh Administrator ke dalam basis data register organisasi permanen (`registers.json`) serta menyinkronkan status sesi menjadi `approved`.
 - **Parameter Input:**
   - `sessionId` (string ID sesi analisis)
   - `title` (string judul register risiko)
-  - `daftar_risiko` (objek array risiko tervalidasi)
+  - `daftar_risiko` (objek array risiko tervalidasi yang disetujui)
   - `status` (string status pengesahan: `final`)
 - **Output:**
-  - Status konfirmasi penyimpanan dan ID register baru (`REG-...`).
+  - Status konfirmasi penyimpanan dan ID register baru (`REG-...`), serta penandaan `isApprovedMaster: true` untuk pencocokan otomatis di masa depan.
 - **Kapan TIDAK Boleh Dipakai:**
-  - **JANGAN DIPAKAI** secara otomatis tanpa persetujuan manual dari pengguna.
+  - **JANGAN DIPAKAI** secara otomatis tanpa persetujuan manual dari Administrator.
+  - **JANGAN DIPAKAI** oleh akun dengan peran Staf Operasional (staf hanya berhak mengajukan draf via `POST /api/sessions/submit`).
 - **Batas Akses:** 
   - **WAJIB PERSETUJUAN MANUSIA (Human Approval):** Sesuai prinsip Blok B & Blok D, tool yang mengubah data atau menulis ke penyimpanan permanen tidak boleh berjalan otomatis.
+
+---
+
+### Fitur Pendukung Admin: `update_nilai_risiko` (Koreksi Manajemen)
+- **Kegunaan:** Memungkinkan Administrator mengoreksi skor Likelihood ($L$), Impact ($I$), formula residual, dan mempertegas kalimat mitigasi sebelum pengesahan final.
+- **Endpoint:** `POST /api/sessions/update-risk`
+- **Output:** Pembaruan item risiko seketika dengan rekalkulasi deterministik otomatis oleh Tool 1.
 

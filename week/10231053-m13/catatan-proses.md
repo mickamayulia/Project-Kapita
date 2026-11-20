@@ -1,4 +1,4 @@
-﻿# CATATAN PROSES — MINGGU 13
+# CATATAN PROSES — MINGGU 13
 
 Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
 Tanggal        : 19 November 2026 (Penyelesaian Lebih Awal / Sprint Mandiri) <br>
@@ -16,7 +16,7 @@ Saya mengimplementasikan dan membuktikan efektivitas 5 lapis guardrails pada pro
 | Lapis 2 | System Prompt Boundary | Aturan negatif tegas di `SYSTEM_PROMPT` dan `v2.md` | Lemah | Dapat diabaikan jika konteks input sangat panjang |
 | Lapis 3 | Akses Tool Kaku | Hak akses file read-only statis, batas langkah kaku `maxSteps=4` di kode JavaScript | **Sangat Kuat** | Kaku, tidak dapat diakses di luar direktori yang ditentukan |
 | Lapis 4 | Output Schema Validation | Fungsi `validateRiskSchema()` dan auto-retry loop jika format cacat | Kuat | Membutuhkan latensi tambahan saat retry terjadi |
-| Lapis 5 | Human-in-the-Loop | Endpoint `POST /api/registers/save` menunggu otorisasi eksplisit pengguna | **Paling Kuat** | Memperlambat siklus automasi penuh |
+| Lapis 5 | Granular Human-in-the-Loop | Endpoint `/api/registers/save` & `/api/sessions/update-risk` menunggu otorisasi sadar Admin, dilengkapi isolasi draf staf (`draft` vs `submitted`) | **Paling Kuat** | Memerlukan review manual manusia |
 
 ## 3. Tahap BREAK — Enam Percobaan Uji Serangan & Penetrasi
 Model & gateway: OpenRouter, 19 November 2026
@@ -42,7 +42,8 @@ Sistem berhasil menangkal 6 dari 6 skenario serangan. Keberhasilan ini didukung 
 1. Dokumentasi lengkap 5 lapis guardrails tersimpan di `p.utama/instruksi/guardrails.md`.
 2. Antarmuka API kini mengembalikan pesan transparan saat guardrails aktif:  
    `{ "status": "blocked_by_guardrails", "reason": "Input memuat pola prompt injection yang dilarang" }`. Pengguna tahu persis mengapa permintaannya ditolak, bukan terjadi kegagalan diam-diam (*silent failure*).
-3. Titik persetujuan manusia (*human-in-the-loop*) aktif mengunci status `awaiting_human_approval` dan merinci dampak yang akan terjadi (jumlah denda dan ID risiko yang akan diterbitkan) sebelum pengguna mengesahkannya.
+3. Titik persetujuan manusia (*human-in-the-loop*) aktif menerapkan siklus 3-status (`draft` $\rightarrow$ `submitted` $\rightarrow$ `approved`), menyaring draf mentah staf agar tidak membanjiri inbox Admin, serta memberikan hak koreksi nilai $L \times I$ dan approval granular per butir risiko sebelum pengesahan final (Lapis 5).
+4. Mekanisme *Official Risk Reuse* disematkan untuk menjamin konsistensi evaluasi insiden berulang dengan mengadopsi parameter resmi yang sudah dipatenkan manajemen.
 
 ## 6. Tantangan wajib
 **Tiga Uji Serangan Nyata pada Produk:**

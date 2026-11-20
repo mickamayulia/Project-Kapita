@@ -1,4 +1,4 @@
-﻿# CATATAN PROSES — MINGGU 14
+# CATATAN PROSES — MINGGU 14
 
 Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
 Tanggal        : 20 November 2026 (Penyelesaian Lebih Awal / Sprint Mandiri) <br>
@@ -48,6 +48,7 @@ Menjalankan evaluasi pada suhu 0.1 menghasilkan konsistensi 100% tanpa fluktuasi
 ## 5. Tahap BUILD
 1. Dokumen [p.utama/laporan-evaluasi.md](file:///d:/Kuliah/Semester%207/KAPITA/Project/Project-Kapita/p.utama/laporan-evaluasi.md) dan set uji [p.utama/set-uji/17-kasus-uji.md](file:///d:/Kuliah/Semester%207/KAPITA/Project/Project-Kapita/p.utama/set-uji/17-kasus-uji.md) telah selesai disusun.
 2. Seluruh 17 kasus teruji tuntas dengan tingkat kelulusan 100%.
+3. Menyematkan seluruh 17 kasus uji secara interaktif (*One-Click Benchmark Chips*) pada antarmuka frontend `AnalysisView.jsx`, sehingga penguji dan dosen dapat mengevaluasi performa sistem secara langsung dengan sekali klik.
 
 ## 6. Tantangan wajib
 **Hasil:** Tercapai.  

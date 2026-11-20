@@ -1,4 +1,4 @@
-﻿# DOKUMENTASI LENGKAP TOOLS & 5 LAPIS GUARDRAILS (Minggu 11–13)
+# DOKUMENTASI LENGKAP TOOLS & 5 LAPIS GUARDRAILS (Minggu 11–13)
 ## Produk: Aviako Risk Register Assistant (RiskRegen)
 **Target CPMK:** Sub-CPMK-4 & Sub-CPMK-6 (Blok D — Agentic)
 
@@ -41,6 +41,11 @@
 2. **Lapis 2 (Prompt Guardrail):** Dipasang di `v2.md` dan `SYSTEM_PROMPT`. Menegakkan aturan strict context boundary dan larangan halusinasi skor jika data ambigu (`null`).
 3. **Lapis 3 (Tool Access Guardrail):** Dipasang langsung di arsitektur fungsi kode (bukan diserahkan ke LLM). Tool hanya memiliki hak baca (*read-only*), direktori akses dibatasi kaku ke `uploads/` dan `data/`. Siklus eksekusi agen dibatasi maksimum **4 langkah kaku** (`maxSteps`).
 4. **Lapis 4 (Output Guardrail):** Dipasang di `validateRiskSchema()`. Memeriksa struktur JSON (field status, daftar_risiko, dan sumber kutipan). Jika rusak, memicu mekanisme retry otomatis 1x dengan umpan balik pesan kesalahan.
-5. **Lapis 5 (Human-in-the-Loop Guardrail):** Dipasang pada endpoint `POST /api/registers/save`. Setiap agen menyelesaikan sintesis investigasi, status akhir diset ke `awaiting_human_approval`. Data tidak akan pernah disimpan ke database register resmi sebelum tombol simpan ditekan secara sadar oleh staf pengguna.
+5. **Lapis 5 (Granular Human-in-the-Loop & Governance Gate):** Dipasang pada siklus status sesi dan endpoint `POST /api/registers/save` serta `/api/sessions/update-risk`:
+   - *Siklus 3 Status:* Draf chat user tersimpan lokal sebagai `draft` tanpa mengotori inbox Admin. Pengajuan sadar oleh user mengubah status menjadi `submitted`.
+   - *Isolasi Inbox Admin:* API backend menyaring ketat sehingga Admin hanya melihat draf yang diajukan atau yang telah disahkan (`approved`).
+   - *Koreksi Nilai & Mitigasi:* Admin memiliki wewenang mengoreksi skor $L \times I$, formula residual, dan mempertegas kalimat mitigasi.
+   - *Persetujuan Granular:* Admin dapat menyetujui (`✓ Sah`) atau menolak (`✗ Tolak`) per butir risiko sebelum pengesahan final.
+   - *Official Risk Reuse:* Risiko yang disahkan masuk ke Master Register dan otomatis diadopsi sistem jika insiden serupa terulang di masa depan. Data tidak akan pernah disimpan ke database register resmi sebelum disahkan secara sadar oleh manajemen.
 
 

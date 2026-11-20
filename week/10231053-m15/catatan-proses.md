@@ -1,4 +1,4 @@
-﻿# CATATAN PROSES — MINGGU 15
+# CATATAN PROSES — MINGGU 15
 
 Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
 Tanggal        : 20 November 2026 (Penyelesaian Lebih Awal / Sprint Mandiri) <br>
@@ -54,6 +54,8 @@ Hal penting yang sebelumnya hilang: Batasan tegas tentang kondisi di mana sistem
 ## 5. Tahap BUILD
 1. Dokumen [p.utama/kajian-risiko.md](file:///d:/Kuliah/Semester%207/KAPITA/Project/Project-Kapita/p.utama/kajian-risiko.md) telah selesai disusun memuat kajian 5 risiko keamanan, analisis 3 jalur bias konkret, 4 pertanyaan etis, dan daftar risiko residual.
 2. Label peringatan etika AI dan transparansi model telah terpasang di antarmuka web.
+3. Mengimplementasikan fitur *Official Risk Reuse* (Pencocokan Master Register Otomatis) sebagai mitigasi atas bias inkonsistensi penilaian risiko antar waktu, menjamin perlakuan yang adil dan seragam terhadap insiden yang berulang.
+4. Menerapkan isolasi privasi data draf (User draft isolation) sehingga catatan coba-coba staf tidak mencemari inbox audit manajemen sebelum diajukan secara resmi.
 
 ## 6. Tantangan wajib
 Paragraf *"Kapan Produk Saya Tidak Boleh Dipercaya"* telah disusun secara lugas pada Bagian 7 dokumen `kajian-risiko.md`, menegaskan bahwa sistem tidak boleh dipercaya untuk ancaman siber zero-day yang belum terdokumentasi dan insiden keselamatan fisik manusia.

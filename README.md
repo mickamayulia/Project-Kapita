@@ -148,16 +148,25 @@ Project-Kapita/
 
 ## 5. Fitur Unggulan Sistem
 
-1. **Visualisasi Matriks Risiko 5 × 5 Interaktif per ID Risiko:**
-   Bukan sekadar chart jumlah agregat, melainkan pemetaan koordinat nyata Likelihood ($L = 1..5$) $\times$ Impact ($I = 1..5$) lengkap dengan pewarnaan zona risiko baku ISO (Merah, Oranye, Hijau) serta pin badge tiap ID risiko (`R001`, `R002`, dst).
-2. **Dekomposisi Multi-Dimensi (Rantai Risiko):**
+1. **Dual-Role Experience (Clean Chat User vs Executive Audit Canvas Admin):**
+   - **Sisi User (Staf Operasional):** Tampilan murni *clean chat-first* (seperti ChatGPT), respons instan (*optimistic UI*), kartu mitigasi inline, dan tombol *"Ajukan Insiden Baru"* tanpa dibebani matriks teknis yang rumit. Draf lokal tidak mengotori database manajemen sebelum diajukan secara sadar.
+   - **Sisi Admin (Manajemen Risiko / Top Management):** Dilengkapi *Executive Risk Register Canvas*, matriks 5x5 interaktif, filter draf masuk terstruktur, serta hak koreksi nilai $L \times I$, mitigasi, dan approval granular per ID risiko.
+2. **Official Risk Reuse (Pencocokan Master Register Otomatis):**
+   Mencegah inkonsistensi penilaian risiko antar waktu. Jika keluhan insiden yang dilaporkan sudah pernah disahkan oleh manajemen, AI secara cerdas mengadopsi parameter baku (`R001`, mitigasi SOP resmi, Risk Owner) dengan label hijau **`Resmi`**.
+3. **Akumulasi Sesi Multi-Turn Tanpa Menghapus:**
+   Pelaporan insiden bertahap dalam satu sesi chat tidak akan menghapus temuan sebelumnya, melainkan terus memperkaya dan menggabungkan butir risiko secara akumulatif.
+4. **Visualisasi Matriks Risiko 5 × 5 Interaktif per ID Risiko:**
+   Pemetaan koordinat nyata Likelihood ($L = 1..5$) $\times$ Impact ($I = 1..5$) lengkap dengan pewarnaan zona risiko baku ISO (Merah, Oranye, Hijau) serta pin badge tiap ID risiko (`R001`, `R002`, dst).
+5. **Dekomposisi Multi-Dimensi (Rantai Risiko):**
    Mampu membedah 1 laporan insiden puncak gunung es menjadi 4 hingga 7 butir risiko turunan (aspek operasional, infrastruktur, kepatuhan POJK, SLA kontrak, dan reputasi).
-3. **Diversity-Aware Multi-Document RAG:**
+6. **Diversity-Aware Multi-Document RAG:**
    Menghindari masalah *chunk starvation* dengan mengambil kuota seimbang dari standar internasional (ISO/COBIT) dan regulasi lokal (POJK/SOP) sekaligus dalam satu risiko.
-4. **Guardrail Ambiguitas (Anti-Halusinasi Skor):**
+7. **Guardrail Ambiguitas (Anti-Halusinasi Skor):**
    Jika input deskriptif tidak memuat indikator waktu/frekuensi kuantitatif, nilai likelihood & impact wajib diset `null` dan berstatus `perlu_verifikasi`. Sistem menolak menebak angka tanpa bukti.
-5. **Lima Lapis Pertahanan Keamanan (Defense-in-Depth):**
-   Input Sanitizer (HTTP 403) $\rightarrow$ Strict Prompt Boundary $\rightarrow$ Sandboxed Read-Only Tools $\rightarrow$ JSON Schema Retry Loop $\rightarrow$ Human-in-the-Loop Approval Gate.
+8. **Lima Lapis Pertahanan Keamanan (Defense-in-Depth):**
+   Input Sanitizer (HTTP 403) $\rightarrow$ Strict Prompt Boundary $\rightarrow$ Sandboxed Read-Only Tools $\rightarrow$ JSON Schema Retry Loop $\rightarrow$ Granular Human-in-the-Loop Approval Gate (Lapis 5).
+9. **One-Click Benchmark Evaluator (17 Kasus Uji):**
+   Seluruh 17 kasus uji acuan pakar (TC-01 s.d. TC-17) disematkan langsung sebagai Quick-Action Chips di antarmuka untuk memudahkan audit dan pengujian live oleh dosen penguji.
 6. **Pemisahan Peran & Portal Autentikasi Pengguna (Role-Based Access):**
    - **Staf / User Portal:** Antarmuka bersih tanpa konfigurasi teknis rumit, difokuskan pada input insiden operasional, simulasi matriks 5×5, dan penyimpanan draf.
    - **Administrator Portal:** Dilengkapi otentikasi PIN/Password (`admin123`), akses pengelolaan *Knowledge Base* dokumen acuan RAG, manajemen master register seluruh organisasi, serta pengaturan API gateway LLM.
