@@ -1,6 +1,6 @@
-# CATATAN PROSES — MINGGU 7
+﻿# CATATAN PROSES — MINGGU 7
 
-Nama / NIM / K : Micka Mayulia Utama / 10231053 / 17 <br>
+Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
 Tanggal        : 16 Oktober 2026 <br>
 Waktu yang saya habiskan minggu ini : 6 jam
 
@@ -62,7 +62,7 @@ Analisis 4 Kesalahan Rancangan RAG Zonasi:
 
 ## 5. Tahap BUILD
 Dokumen `p.utama/rancangan-rag.md` telah dibuat lengkap memuat:
-1. Daftar 8 dokumen rujukan sah ($K=17$).
+1. Daftar 8 dokumen rujukan sah ($K=5$).
 2. Tabel 6 keputusan desain RAG lengkap dengan alasannya.
 3. Contoh prompt grounding context.
 4. System prompt dengan aturan strict context boundary.
@@ -105,3 +105,5 @@ Total kumulatif  : Rp 42
 ## 10. Yang macet dan rencana minggu depan
 Yang masih macet : Mempersiapkan slide presentasi 8 slide dan dokumen `rancangan-sistem.md` untuk Ujian Tengah Semester (Minggu 8).  
 Rencana konkret minggu depan : Menyusun materi presentasi UTS dan mempertahankan keputusan desain di Minggu 8.
+
+

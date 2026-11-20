@@ -1,6 +1,6 @@
-# CATATAN PROSES — MINGGU 10
+﻿# CATATAN PROSES — MINGGU 10
 
-Nama / NIM / K : Micka Mayulia Utama / 10231053 / 17 <br>
+Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
 Tanggal        : 06 November 2026 <br>
 Waktu yang saya habiskan minggu ini : 6 jam
 
@@ -90,4 +90,6 @@ Total kumulatif  : Rp 42
 ## 10. Yang macet dan rencana minggu depan
 Yang masih macet : Membangun endpoint kode backend untuk multi-step agentic loop dengan batas langkah kaku dan state memory.  
 Rencana konkret minggu depan : Mengimplementasikan agent loop, memory state luar, dan guardrail di Minggu 11.
+
+
 

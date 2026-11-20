@@ -1,13 +1,13 @@
-# CATATAN PROSES — MINGGU 2
+﻿# CATATAN PROSES — MINGGU 2
 
-Nama / NIM / K : Micka Mayulia Utama / 10231053 / 17 <br>
+Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
 Tanggal        : 11 September 2026 <br>
 Waktu yang saya habiskan minggu ini : 6 jam
 
 ---
 
 ## 1. Yang saya kerjakan minggu ini
-Saya membedah jawaban model tentang buku Ethics in IT edisi 5 karya Reynolds menggunakan tabel verifikasi pada tahap READ. Pada tahap BREAK, saya menjalankan 6 percobaan pada Gemini Flash-Lite untuk menguji suhu, panjang output, rujukan pasal POJK MRTI, instruksi "TIDAK TAHU", dan efek needle in a haystack. Pada tahap BUILD, saya memilih persoalan Register Risiko TI (melanjutkan Minggu 1) dan menghitung estimasi biaya token. Saya juga memperbaiki prompt untuk menyelesaikan Tantangan Wajib.
+Saya membedah jawaban model tentang buku Ethics in IT edisi 5 karya Reynolds menggunakan tabel verifikasi pada tahap READ. Pada tahap BREAK, saya menjalankan 6 percobaan pada Dots 3 Note (Free) untuk menguji suhu, panjang output, rujukan pasal POJK MRTI, instruksi "TIDAK TAHU", dan efek needle in a haystack. Pada tahap BUILD, saya memilih persoalan Register Risiko TI (melanjutkan Minggu 1) dan menghitung estimasi biaya token. Saya juga memperbaiki prompt untuk menyelesaikan Tantangan Wajib.
 
 
 ## 2. Tahap READ
@@ -25,11 +25,11 @@ Yang mengejutkan saya : Saya memperkirakan model akan menyisipkan opini atau kla
 Berapa persen pernyataan yang tidak dapat Anda periksa sama sekali? Apa artinya angka itu bagi rencana produk Anda?: Sekitar 5%. Angka ini menunjukkan bahwa model aman digunakan untuk mengekstraksi poin kunci dokumen manajemen risiko/etika, namun klaim kualitatif mengenai manfaat tetap membutuhkan verifikasi manusia.
 
 ## 3. Tahap BREAK
-Model & tanggal: Gemini Flash-Lite, 07 September 2026
+Model & tanggal: Dots 3 Note (Free), 07 September 2026
 
 | # | Percobaan | Prediksi saya | Hasil sebenarnya | Prediksi tepat? |
 |---|---|---|---|---|
-|1|Prompt sama, suhu 0, dijalankan 3x|Jawaban identik teks demi teks|Gemini tidak menyediakan pengatur suhu di GUI. Hasil 1 berupa paragraf berpoin; hasil 2 & 3 berupa tabel perbandingan PXP vs RAD.|tidak|
+|1|Prompt sama, suhu 0, dijalankan 3x|Jawaban identik teks demi teks|Dots 3 Note tidak menyediakan pengatur suhu di GUI. Hasil 1 berupa paragraf berpoin; hasil 2 & 3 berupa tabel perbandingan PXP vs RAD.|tidak|
 |2|Prompt sama, suhu 1, dijalankan 3x|Jawaban sangat bervariasi dibanding suhu 0|Hasil sama seperti nomor 1. Format berubah antara paragraf dan tabel meskipun prompt identik.|tidak|
 |3|Minta jawaban ≤50 kata, lalu ≤500 kata|Bisa dibatasi dengan tepat|≤50 kata menghasilkan 42 kata berisikan poin utama. ≤500 kata menghasilkan penjelasan detail berpoin.|ya|
 |4|Tanyakan pasal 7 POJK MRTI & sumbernya|Model memberikan nomor pasal & pasal acuan tepat|Model menjawab isi pasal, namun mencampur POJK MRTI bank umum & non-bank karena prompt kurang spesifik. Sumber: UB, OJK, Scribd.|ya|
@@ -53,7 +53,7 @@ Dimulai di Minggu 4
    - Panjang Output Khas: ~500 token (ekstraksi register risiko terstruktur).
    - Jumlah Pemanggilan per Tugas: 3 kali pemanggilan per alur analisis.
 
-3. Perhitungan Biaya (Model: Gemini Flash-Lite)
+3. Perhitungan Biaya (Model: Dots 3 Note (Free))
    - Tarif API: Input $0,075/1M token | Output $0,30/1M token ($1 = Rp15.500).
    - Biaya per Pemanggilan: Input (Rp1,74) + Output (Rp2,33) = Rp4,07.
    - Biaya per Tugas (3x pemanggilan): 3 × Rp4,07 = Rp12,21.
@@ -85,7 +85,7 @@ Mengapa pembatasan system prompt yang ketat (negative constraint) mampu mematika
 ## 8. Pemakaian dan biaya
 | Kegiatan | Model | Perkiraan token | Perkiraan biaya |
 |---|---|---|---|
-| Uji coba Break | Gemini Flash-Lite | ~1.000 token | Rp 0 |
+| Uji coba Break | Dots 3 Note (Free) | ~1.000 token | Rp 0 |
 
 Total minggu ini : Rp 0
 Total kumulatif  : Rp 0
@@ -104,3 +104,4 @@ Apa yang sudah saya coba untuk mengatasinya : Memetakan kategori risiko berdasar
 Rencana konkret minggu depan :
 1.   Menyusun rubrik penilain *gold standard* eksplisit khusus untuk 4 kasus uji *adversarial* dan 2 kasus *boundary*.
 2. Meminta tanggapan atau memvalidasi kriteria *gold standard* tersebut ke dosen/rekan sebelum melakukan eksekusi uji otomatis.
+

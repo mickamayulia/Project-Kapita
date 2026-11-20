@@ -1,6 +1,6 @@
-# CATATAN PROSES — MINGGU 5
+﻿# CATATAN PROSES — MINGGU 5
 
-Nama / NIM / K : Micka Mayulia Utama / 10231053 / 17 <br>
+Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
 Tanggal        : 02 Oktober 2026 <br>
 Waktu yang saya habiskan minggu ini : 6 jam
 
@@ -106,3 +106,5 @@ Total kumulatif  : Rp 42
 ## 10. Yang macet dan rencana minggu depan
 Yang masih macet : Pemanggilan fungsi kalkulasi skor risiko masih dilakukan manual di backend, belum menggunakan protokol resmi tool calling OpenRouter.  
 Rencana konkret minggu depan : Mendaftarkan fungsi deterministik sebagai skema tool resmi di Minggu 6.
+
+

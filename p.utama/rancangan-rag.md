@@ -1,12 +1,12 @@
-# RANCANGAN ARSITEKTUR RAG (RETRIEVAL-AUGMENTED GENERATION)
+﻿# RANCANGAN ARSITEKTUR RAG (RETRIEVAL-AUGMENTED GENERATION)
 ## Produk: Aviako Risk Register Assistant (RiskRegen)
-**Penyusun / NIM / K:** Micka Mayulia Utama / 10231053 / 17  
+**Penyusun / NIM / K:** Micka Mayulia Utama / 10231053 / 5  
 **Modul Acuan:** Minggu 7 (Blok C — Grounding)
 
 ---
 
 ## 1. Daftar Dokumen Rujukan Resmi
-Jumlah minimum dokumen untuk $K=17$ adalah $5 + (17 \bmod 4) = 6$ dokumen. Sistem ini menggunakan 8 dokumen rujukan yang relevan dengan tata kelola & risiko TI:
+Jumlah minimum dokumen untuk $K=5$ adalah $5 + (5 \\bmod 4) = 6$ dokumen. Sistem ini menggunakan 8 dokumen rujukan yang relevan dengan tata kelola & risiko TI:
 
 | # | Nama Dokumen | Asal / Penerbit | Halaman | Status Kelayakan | Peran dalam Sistem |
 |---|---|---|---|---|---|
@@ -122,4 +122,6 @@ Jika satu dokumen (misal Kebijakan Internal) memiliki 3 paragraf yang memiliki k
 2. **Pendekatan Query Decomposition (Pemecahan Sub-Pertanyaan):**
    - *Cara Kerja:* Sistem memecah pertanyaan menjadi dua query terpisah: (a) "Aturan eskalasi vendor" $\rightarrow$ cari di Dokumen Kebijakan, dan (b) "Mitigasi kontinuitas sistem" $\rightarrow$ cari di Dokumen Standar ISO, lalu menggabungkan konteksnya.
    - *Biaya:* Membutuhkan 1 panggilan ekstra LLM kecil untuk dekomposisi query ($\approx 250$ token $\approx$ Rp 1 per panggilan) atau aturan regex sederhana (Rp 0).
+
+
 

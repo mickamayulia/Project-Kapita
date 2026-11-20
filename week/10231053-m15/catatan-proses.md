@@ -1,6 +1,6 @@
-# CATATAN PROSES — MINGGU 15
+﻿# CATATAN PROSES — MINGGU 15
 
-Nama / NIM / K : Micka Mayulia Utama / 10231053 / 17 <br>
+Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
 Tanggal        : 11 Desember 2026 <br>
 Waktu yang saya habiskan minggu ini : 6 jam
 
@@ -91,4 +91,6 @@ Total kumulatif  : Rp 42
 ## 10. Yang macet dan rencana minggu depan
 Yang masih macet : Mempersiapkan berkas portofolio final lengkap dan dokumen refleksi untuk Ujian Akhir Semester (Minggu 16).  
 Rencana konkret minggu depan : Menyusun berkas `refleksi.md` dan mengemas portofolio final di Minggu 16.
+
+
 

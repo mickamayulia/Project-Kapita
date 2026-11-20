@@ -1,6 +1,6 @@
-# KAJIAN RISIKO, BIAS, DAN PERNYATAAN ETIS PROFESIONAL
+﻿# KAJIAN RISIKO, BIAS, DAN PERNYATAAN ETIS PROFESIONAL
 ## Produk: Aviako Risk Register Assistant (RiskRegen)
-**Penyusun / NIM / K:** Micka Mayulia Utama / 10231053 / 17  
+**Penyusun / NIM / K:** Micka Mayulia Utama / 10231053 / 5  
 **Modul Acuan:** Minggu 15 (Blok E — Kematangan)
 
 ---
@@ -80,4 +80,6 @@ Setiap sesi analisis pada antarmuka pengguna memuat catatan peringatan:
 
 > ### Kapan Produk Saya Tidak Boleh Dipercaya
 > *"Produk ini **TIDAK BOLEH DIPERCAYA** saat Anda menggunakannya untuk menangani insiden yang menyangkut keselamatan fisik manusia secara langsung, sengketa pidana pengadilan, atau saat sistem jaringan bandara Anda diserang oleh ancaman siber jenis baru yang belum pernah terdokumentasi di dalam buku pedoman ISO maupun SOP internal Anda. Produk ini juga **TIDAK BOLEH DIPERCAYA** jika Anda memasukkan deskripsi insiden yang hanya berupa asumsi tanpa fakta kronologi, karena kecerdasan buatan hanyalah perangkum probabilitas—ia akan terdengar sangat meyakinkan saat mengarang mitigasi yang tampak masuk akal padahal tidak ada dasar hukumnya. Jangan pernah menjadikan tombol 'Simpan' sebagai formalitas; tanggung jawab atas keputusan mitigasi tetap berada di tangan Anda sebagai staf profesional, bukan pada model bahasa ini."*
+
+
 

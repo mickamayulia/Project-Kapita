@@ -1,6 +1,6 @@
-# CATATAN PROSES — MINGGU 11
+﻿# CATATAN PROSES — MINGGU 11
 
-Nama / NIM / K : Micka Mayulia Utama / 10231053 / 17 <br>
+Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
 Tanggal        : 13 November 2026 <br>
 Waktu yang saya habiskan minggu ini : 7 jam
 
@@ -92,4 +92,6 @@ Total kumulatif  : Rp 42
 ## 10. Yang macet dan rencana minggu depan
 Yang masih macet : Menyiapkan telaah kritis studi kasus praktisi dunia nyata untuk Minggu 12.  
 Rencana konkret minggu depan : Mengerjakan analisis studi kasus ASDOS-AI dan peer review di Minggu 12.
+
+
 

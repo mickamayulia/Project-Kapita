@@ -1,6 +1,6 @@
-# CATATAN PROSES — MINGGU 3
+﻿# CATATAN PROSES — MINGGU 3
 
-Nama / NIM / K : Micka Mayulia Utama / 10231053 / 17 <br>
+Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
 Tanggal        : 18 September 2026 <br>
 Waktu yang saya habiskan minggu ini : 5 jam
 
@@ -56,7 +56,7 @@ Dimulai di Minggu 4
 |---|---|---|---|---|
 | `dots-studio/dots-3-note-preview:free` | $0.00 / $0.00 (Free) | ~1.3 s | 4.5 | Ekstraksi risiko rapi, pemahaman Bahasa Indonesia sangat baik |
 | `openai/gpt-4o-mini` | $0.15 / $0.60 | ~1.1 s | 4.8 | Struktur JSON sangat konsisten, penalaran mitigasi matang |
-| `google/gemini-2.0-flash-exp:free` | $0.00 / $0.00 (Free) | ~0.9 s | 4.3 | Cepat, namun kadang menyisipkan penjelasan naratif pembuka |
+| `cohere/north-mini-code:free` | $0.00 / $0.00 (Free) | ~0.9 s | 4.3 | Cepat, namun kadang menyisipkan penjelasan naratif pembuka |
 
 ## 6. Tantangan wajib
 **Hasil:** Tercapai.  
@@ -85,7 +85,7 @@ Bagaimana mekanisme OpenRouter meneruskan prompt ke model upstream tanpa memenga
 ## 8. Pemakaian dan biaya
 | Kegiatan | Model | Perkiraan token | Perkiraan biaya |
 |---|---|---|---|
-| Setup & Uji Pemanggilan Model Gateway | dots-studio, gpt-4o-mini, gemini | ~6.000 token | Rp 42 |
+| Setup & Uji Pemanggilan Model Gateway | dots-studio, cohere-north-mini, nvidia-nemotron | ~6.000 token | Rp 0 (Free Tier) |
 
 Total minggu ini : Rp 42  
 Total kumulatif  : Rp 42  
@@ -103,3 +103,5 @@ Total kumulatif  : Rp 42
 Yang masih macet : Penanganan saat response model terpotong akibat limit token.  
 Apa yang sudah saya coba untuk mengatasinya : Menaikkan max_tokens ke 1500.  
 Rencana konkret minggu depan : Mulai menyusun system prompt terstruktur v1 dan skema JSON tetap untuk Minggu 4.
+
+

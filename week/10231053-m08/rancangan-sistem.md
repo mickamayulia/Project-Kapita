@@ -1,4 +1,4 @@
-# RANCANGAN SISTEM — RISKREGEN
+﻿# RANCANGAN SISTEM — RISKREGEN
 
 **Asisten Penyusun Register Risiko TI Berbasis AI Generatif dengan Grounding Kerangka Manajemen Risiko dan Data Insiden Organisasi**
 
@@ -144,7 +144,7 @@ class RiskRegisterOutput(BaseModel):
 
 ## 5. Daftar Tool & Batas Akses Keamanan (AI Safety)
 
-Sistem mengimplementasikan **minimal 3 tool** sesuai ketentuan $K = 11$:
+Sistem mengimplementasikan **minimal 3 tool** sesuai ketentuan $K = 5$:
 
 | # | Nama Tool | Tipe Operasi | Izin / Akses | Batas Akses (Safety Guardrail) | Persetujuan Manusia |
 |---|---|---|---|---|---|
@@ -159,7 +159,7 @@ Sistem mengimplementasikan **minimal 3 tool** sesuai ketentuan $K = 11$:
 
 ---
 
-## 6. Grounding: Dokumen Rujukan & Rancangan RAG ($K = 11$)
+## 6. Grounding: Dokumen Rujukan & Rancangan RAG ($K = 5$)
 
 Sistem diground menggunakan **8 dokumen resmi terbuka** yang bebas dari data pribadi:
 
@@ -207,7 +207,7 @@ Output lolos validasi Pydantic, skor cocok dengan hitungan manual.
 
 ---
 
-## 8. Tabel 17 Kasus Uji Sistem ($K = 11$)
+## 8. Tabel 17 Kasus Uji Sistem ($K = 5$)
 
 | ID | Kategori | Input Pengguna / Skenario | Output yang Diharapkan | Kriteria Sukses / Guardrail |
 |---|---|---|---|---|
@@ -257,7 +257,7 @@ Output lolos validasi Pydantic, skor cocok dengan hitungan manual.
 
 Kalau K kamu genap, ganti bagian berikut:
 
-| Bagian | K Ganjil (K=11) | K Genap (K=10) |
+| Bagian | K Ganjil (K=5) | K Genap (K=10) |
 |---|---|---|
 | Dokumen | 8 | 7 (hapus 1 dokumen publik, misal COBIT) |
 | Kasus uji | 17 | 16 (gabung TC-06 & TC-07) |
@@ -279,3 +279,4 @@ class RiskRegisterRingkas(BaseModel):
     daftar_risiko: list[RisikoRingkas]
     status: Literal["sukses", "parsial", "gagal"]
 ```
+

@@ -1,10 +1,10 @@
-# DOKUMENTASI LENGKAP TOOLS & 5 LAPIS GUARDRAILS (Minggu 11–13)
+﻿# DOKUMENTASI LENGKAP TOOLS & 5 LAPIS GUARDRAILS (Minggu 11–13)
 ## Produk: Aviako Risk Register Assistant (RiskRegen)
 **Target CPMK:** Sub-CPMK-4 & Sub-CPMK-6 (Blok D — Agentic)
 
 ---
 
-## 1. Daftar Tool Resmi (Syarat $K=17 \rightarrow 2 + (17 \bmod 2) = 3$ Tool)
+## 1. Daftar Tool Resmi (Syarat $K=5 \rightarrow 2 + (5 \\bmod 2) = 3$ Tool)
 
 | # | Nama Tool | Kegunaan | Parameter Input | Output | Batas Akses & Tempat Pemasangan |
 |---|---|---|---|---|---|
@@ -42,4 +42,5 @@
 3. **Lapis 3 (Tool Access Guardrail):** Dipasang langsung di arsitektur fungsi kode (bukan diserahkan ke LLM). Tool hanya memiliki hak baca (*read-only*), direktori akses dibatasi kaku ke `uploads/` dan `data/`. Siklus eksekusi agen dibatasi maksimum **4 langkah kaku** (`maxSteps`).
 4. **Lapis 4 (Output Guardrail):** Dipasang di `validateRiskSchema()`. Memeriksa struktur JSON (field status, daftar_risiko, dan sumber kutipan). Jika rusak, memicu mekanisme retry otomatis 1x dengan umpan balik pesan kesalahan.
 5. **Lapis 5 (Human-in-the-Loop Guardrail):** Dipasang pada endpoint `POST /api/registers/save`. Setiap agen menyelesaikan sintesis investigasi, status akhir diset ke `awaiting_human_approval`. Data tidak akan pernah disimpan ke database register resmi sebelum tombol simpan ditekan secara sadar oleh staf pengguna.
+
 

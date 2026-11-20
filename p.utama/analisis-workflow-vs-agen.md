@@ -1,6 +1,6 @@
-# ANALISIS PERBANDINGAN: WORKFLOW vs AGENT
+﻿# ANALISIS PERBANDINGAN: WORKFLOW vs AGENT
 ## Produk: Aviako Risk Register Assistant (RiskRegen)
-**Penyusun / NIM / K:** Micka Mayulia Utama / 10231053 / 17  
+**Penyusun / NIM / K:** Micka Mayulia Utama / 10231053 / 5  
 **Modul Acuan:** Minggu 10 (Blok D — Agentic)
 
 ---
@@ -109,4 +109,6 @@ Rancangan Agent **4,27 kali lipat lebih mahal** daripada Workflow.
 
 **Apa yang Didapatkan dari Selisih Biaya Tersebut?**  
 Dengan membayar 4,2x lebih mahal pada mode agent, sistem memperoleh fleksibilitas untuk menangani insiden kompleks yang tidak terduga (misal insiden vendor yang melibatkan 3 sistem berbeda secara simultan di mana agent mampu menelusuri ketiga dokumen rujukan satu per satu secara otonom). Namun untuk 80% kasus operasional rutin harian, Workflow jauh lebih efisien dan terpercaya.
+
+
 

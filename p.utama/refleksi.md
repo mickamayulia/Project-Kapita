@@ -1,6 +1,6 @@
-# REFLEKSI AKHIR SEMESTER
+﻿# REFLEKSI AKHIR SEMESTER
 ## Kapita Selekta: AI Engineering (Ganjil 2026/2027)
-**Nama / NIM / K :** Micka Mayulia Utama / 10231053 / 17  
+**Nama / NIM / K :** Micka Mayulia Utama / 10231053 / 5  
 **Produk           :** Aviako Risk Register Assistant (RiskRegen)  
 
 ---
@@ -23,4 +23,6 @@ Pada pengujian awal Minggu 7 (Retrieval RAG), saya sempat menyadari terjadinya m
 
 ### 4. Kalau produk Anda dipakai orang sungguhan mulai besok, apa yang paling membuat Anda khawatir?
 Hal yang paling membuat saya khawatir adalah jika pengguna **memperlakukan sistem ini seperti oracle yang maha-tahu dan menekan tombol 'Simpan Register' tanpa membaca ulang buktinya**. Meskipun sistem sudah dilengkapi *guardrail* ambiguitas (mengembalikan `null` jika data tidak lengkap) dan menautkan kutipan dokumen rujukan, kecenderungan manusia untuk malas memverifikasi (*automation bias*) dapat membuat staf non-IT meloloskan penilaian risiko yang tidak akurat hanya karena bahasanya terdengar sangat meyakinkan dan formal. Oleh karena itu, edukasi bahwa sistem ini hanyalah *asisten penyusun draf*—bukan pengambil keputusan—adalah benteng pertahanan yang paling krusial.
+
+
 

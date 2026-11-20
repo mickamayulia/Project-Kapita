@@ -1,6 +1,6 @@
-# CATATAN PROSES — MINGGU 4
+﻿# CATATAN PROSES — MINGGU 4
 
-Nama / NIM / K : Micka Mayulia Utama / 10231053 / 17 <br>
+Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
 Tanggal        : 25 September 2026 <br>
 Waktu yang saya habiskan minggu ini : 6 jam
 
@@ -50,7 +50,7 @@ Prompt bermasalah:
    *Perbaikan:* "Jawab maksimal 2 kalimat per butir. Bila informasi pendukung tidak ada pada teks keluhan, isi bukti dengan frasa 'TIDAK TERTERA'."
 
 ## 5. Tahap BUILD
-1. **Lembar Tema Proyek:** Disahkan pada dokumen `fer.md` ($K=17$, topik: Aviako Risk Register Assistant).
+1. **Lembar Tema Proyek:** Disahkan pada dokumen `fer.md` ($K=5$, topik: Aviako Risk Register Assistant).
 2. **File Instruksi:** Tersimpan di folder `p.utama/instruksi/` berupa `v1.md`, `v2.md`, dan tabel riwayat di `CATATAN.md`.
 3. **Hasil Pengujian 5 Input pada Prompt v1 vs v2:**
    - 2 Kasus Umum: v1 dan v2 sama-sama berhasil mengekstrak risiko.
@@ -103,3 +103,5 @@ Total kumulatif  : Rp 42
 Yang masih macet : Kadang model masih menambahkan teks Markdown codeblock (` ```json `) di luar objek JSON.  
 Apa yang sudah saya coba untuk mengatasinya : Melakukan regex sanitization di backend.  
 Rencana konkret minggu depan : Mengunci JSON Schema secara absolut dengan validasi otomatis dan mekanisme retry 3 langkah di Minggu 5.
+
+

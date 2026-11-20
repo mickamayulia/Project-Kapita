@@ -1,6 +1,6 @@
-# CATATAN PROSES — MINGGU 6
+﻿# CATATAN PROSES — MINGGU 6
 
-Nama / NIM / K : Micka Mayulia Utama / 10231053 / 17 <br>
+Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
 Tanggal        : 09 Oktober 2026 <br>
 Waktu yang saya habiskan minggu ini : 6 jam
 
@@ -109,5 +109,7 @@ Total kumulatif  : Rp 42
 - [x] **Luaran Blok B** (Minggu 4–6) siap dan lengkap
 
 ## 10. Yang macet dan rencana minggu depan
-Yang masih macet : Mempersiapkan dokumen rujukan sesuai batas $K=17$ (minimum 6 dokumen sah berformat teks/PDF).  
+Yang masih macet : Mempersiapkan dokumen rujukan sesuai batas $K=5$ (minimum 6 dokumen sah berformat teks/PDF).  
 Rencana konkret minggu depan : Melangkah ke Blok C (Grounding & Retrieval RAG) pada Minggu 7.
+
+

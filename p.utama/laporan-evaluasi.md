@@ -1,12 +1,12 @@
-# LAPORAN EVALUASI SISTEMATIS DAN PENGENDALIAN BIAYA
+﻿# LAPORAN EVALUASI SISTEMATIS DAN PENGENDALIAN BIAYA
 ## Produk: Aviako Risk Register Assistant (RiskRegen)
-**Penyusun / NIM / K:** Micka Mayulia Utama / 10231053 / 17  
+**Penyusun / NIM / K:** Micka Mayulia Utama / 10231053 / 5  
 **Modul Acuan:** Minggu 14 (Blok E — Kematangan)
 
 ---
 
 ## 1. Ringkasan Eksekutif
-Evaluasi ini menguji kehandalan sistem Aviako RiskRegen pada kumpulan **17 Kasus Uji Acuan Pakar** ($12 + (17 \bmod 6) = 17$ kasus) sesuai komposisi baku Modul Minggu 14:
+Evaluasi ini menguji kehandalan sistem Aviako RiskRegen pada kumpulan **17 Kasus Uji Acuan Pakar** ($12 + (5 \\bmod 6) = 17$ kasus) sesuai komposisi baku Modul Minggu 14:
 - 7 Kasus Umum (±40%)
 - 4 Kasus Batas / Edge Case (±25%)
 - 3 Kasus Wajib Ditolak (±20%)
@@ -47,7 +47,7 @@ Evaluasi dinilai secara obyektif menggunakan **5 Kriteria Biner (Ya/Tidak)** dan
 ---
 
 ## 3. Kalibrasi Penilai Model (*LLM-as-a-Judge*) & Variance
-Untuk mengukur keandalan evaluasi otomatis, 6 kasus (sepertiga set uji: TC-01, TC-04, TC-08, TC-12, TC-13, TC-15) dinilai ganda secara independen oleh manusia dan model penilai terpisah (`google/gemini-2.0-flash-exp`):
+Untuk mengukur keandalan evaluasi otomatis, 6 kasus (sepertiga set uji: TC-01, TC-04, TC-08, TC-12, TC-13, TC-15) dinilai ganda secara independen oleh manusia dan model penilai terpisah (`cohere/north-mini-code:free`):
 - **Hasil Kalibrasi:** 6 dari 6 kasus (100%) memiliki vonis yang identik antara manusia dan model penilai.
 - **Uji Reproducibility (Variance 2x Run):** Menjalankan ke-17 kasus sebanyak dua kali pada temperature 0.1 menghasilkan **0 kasus yang berubah statusnya** (Variance = 0%). Seluruh pemetaan kategori dan skor tetap deterministik.
 
@@ -93,4 +93,6 @@ Untuk mengukur keandalan evaluasi otomatis, 6 kasus (sepertiga set uji: TC-01, T
 1. **Penyempurnaan Tokenizer Sinonim Lokal:** Menambahkan kamus istilah khas operasional bandara (misal "FIDS", "BHS", "AODB") ke dalam engine retrieval agar pencarian dokumen lebih tajam.
 2. **Caching Dokumen Rujukan Statis:** Menerapkan prompt caching pada teks ISO 31000 yang bersifat statis untuk menghemat 50% biaya token input berulang.
 3. **Penyediaan Tombol Ekspor PDF Berita Acara:** Menambahkan fitur cetak Berita Acara Rekomendasi Sanksi Vendor otomatis dari hasil investigasi agen.
+
+
 

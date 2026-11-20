@@ -469,11 +469,11 @@ export default function App() {
 
         {/* TAB 1: CHAT & ANALYSIS */}
         {activeTab === 'chat' && (
-          <div style={{ display: 'grid', gridTemplateColumns: currentResult ? '380px 1fr' : '1fr', gap: '20px' }}>
+          <div className={currentResult ? "split-screen-grid" : ""}>
             
             {/* Left Panel */}
-            <div className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px', position: currentResult ? 'sticky' : 'static', top: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Sparkles size={16} color="var(--accent-cyan)" />
                   <h2 style={{ fontSize: '0.95rem', fontWeight: 700 }}>Input Catatan Insiden</h2>
@@ -493,7 +493,7 @@ export default function App() {
                   <option value="dots-studio/dots-3-note-preview:free">⚡ Dots 3 Note (Super Cepat ~0.5s / Free)</option>
                   <option value="cohere/north-mini-code:free">⚡ Cohere North Mini (Cepat ~0.7s / Free)</option>
                   <option value="nvidia/nemotron-3.5-lightning:free">Nvidia Nemotron 3.5 (Gratis)</option>
-                  <option value="google/gemini-2.5-flash-lite">Gemini 2.5 Flash Lite (der.txt - Berbayar)</option>
+                  <option value="cohere/north-mini-code:free">Dots 3 Note 2.5 Flash Lite (der.txt - Berbayar)</option>
                 </select>
               </div>
 
@@ -631,7 +631,7 @@ export default function App() {
                       </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 1fr) 280px', gap: '20px', alignItems: 'start' }}>
+                    <div className="matrix-grid-responsive">
                       {/* Grid Matriks 5x5 */}
                       <div style={{ overflowX: 'auto' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1106,7 +1106,7 @@ export default function App() {
           <div className="glass-panel" style={{ padding: '24px', maxWidth: '560px', margin: '0 auto' }}>
             <h2 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '6px' }}>Pengaturan API OpenRouter</h2>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '16px' }}>
-              Masukkan API Key dari OpenRouter agar sistem dapat memanggil model AI (Gemini Flash Lite, DeepSeek, dsb).
+              Masukkan API Key dari OpenRouter agar sistem dapat memanggil model AI (Dots 3 Note (Free) Lite, DeepSeek, dsb).
             </p>
 
             {/* Quick Link Info Box */}
@@ -1163,7 +1163,7 @@ export default function App() {
                   <option value="dots-studio/dots-3-note-preview:free">dots-studio/dots-3-note-preview:free (Super Cepat ~0.5s / Free)</option>
                   <option value="cohere/north-mini-code:free">cohere/north-mini-code:free (Cepat ~0.7s / Free)</option>
                   <option value="nvidia/nemotron-3.5-lightning:free">nvidia/nemotron-3.5-lightning:free (Gratis)</option>
-                  <option value="google/gemini-2.5-flash-lite">google/gemini-2.5-flash-lite (Berbayar - der.txt)</option>
+                  <option value="cohere/north-mini-code:free">cohere/north-mini-code:free (Berbayar - der.txt)</option>
                 </select>
               </div>
 

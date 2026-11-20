@@ -1,6 +1,6 @@
-# SET UJI EVALUASI DAN JAWABAN ACUAN PAKAR (17 KASUS)
+﻿# SET UJI EVALUASI DAN JAWABAN ACUAN PAKAR (17 KASUS)
 ## Produk: Aviako Risk Register Assistant (RiskRegen)
-**Target Peserta K = 17:** $12 + (17 \bmod 6) = 12 + 5 = 17$ Kasus Uji  
+**Target Peserta K = 5:** $12 + (5 \\bmod 6) = 12 + 5 = 17$ Kasus Uji  
 **Komposisi:**
 - Kasus Umum (±40% = 7 kasus)
 - Kasus Batas / Edge Case (±25% = 4 kasus)
@@ -53,4 +53,5 @@ Untuk setiap kasus uji, evaluasi dilakukan menggunakan 5 pertanyaan obyektif:
 | **TC-15** | Model sebelumnya mengarang nilai L & I (memberi nilai 3 & 4) pada input tanpa data frekuensi kuantitatif. | "Vendor baru belum menyerahkan dokumentasi API integrasi gerbang otomatis." | Konsisten mengembalikan `likelihood: null`, `impact: null`, serta tingkat: `perlu_verifikasi`. |
 | **TC-16** | Model sebelumnya menyisipkan teks naratif pembuka *"Tentu, ini analisis saya:"* yang merusak JSON parser. | "Terjadi lonjakan koneksi tidak wajar pada firewall bandara dari subnet asing." | Mengembalikan HANYA format JSON murni yang langsung lolos validasi `JSON.parse()`. |
 | **TC-17** | Agent sebelumnya terjebak loop memanggil kalkulator denda padahal durasi waktu tidak tertera dalam angka. | "Vendor sering mengabaikan tiket perbaikan sistem operasional staf." | Agent melompati kalkulator denda finansial dan langsung merujuk pada tinjauan kontrak SOP vendor. |
+
 

@@ -1,6 +1,6 @@
-# CATATAN PROSES — MINGGU 12
+﻿# CATATAN PROSES — MINGGU 12
 
-Nama / NIM / K : Micka Mayulia Utama / 10231053 / 17 <br>
+Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
 Tanggal        : 20 November 2026 <br>
 Waktu yang saya habiskan minggu ini : 5 jam
 
@@ -72,4 +72,6 @@ Total biaya minggu ini: Rp 0 | Total kumulatif: Rp 42.
 - [x] Dua keputusan untuk ditiru dan satu yang ditolak dijelaskan alasannya
 - [x] Dua lembar peer review disusun
 - [x] Tantangan wajib (bantahan beralasan terhadap kritik) selesai ditulis
+
+
 

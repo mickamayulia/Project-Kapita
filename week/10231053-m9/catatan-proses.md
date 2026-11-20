@@ -1,6 +1,6 @@
-# CATATAN PROSES — MINGGU 9
+﻿# CATATAN PROSES — MINGGU 9
 
-Nama / NIM / K : Micka Mayulia Utama / 10231053 / 17 <br>
+Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
 Tanggal        : 30 Oktober 2026 <br>
 Waktu yang saya habiskan minggu ini : 7 jam
 
@@ -118,3 +118,5 @@ Total kumulatif  : Rp 42
 ## 10. Yang macet dan rencana minggu depan
 Yang masih macet : Menyiapkan integrasi multi-step agentic di Blok D (Minggu 10) dengan guardrails dan human-in-the-loop.  
 Rencana konkret minggu depan : Memasuki Blok D — Agentic Workflow pada Minggu 10.
+
+

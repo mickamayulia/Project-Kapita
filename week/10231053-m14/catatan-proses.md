@@ -1,13 +1,13 @@
-# CATATAN PROSES — MINGGU 14
+﻿# CATATAN PROSES — MINGGU 14
 
-Nama / NIM / K : Micka Mayulia Utama / 10231053 / 17 <br>
+Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
 Tanggal        : 04 Desember 2026 <br>
 Waktu yang saya habiskan minggu ini : 7 jam
 
 ---
 
 ## 1. Yang saya kerjakan minggu ini
-Saya melaksanakan evaluasi sistematis produk pada 17 kasus uji acuan pakar sesuai angka lingkup $K=17$. Pada tahap READ, saya menguji konsistensi 5 kriteria biner ya/tidak. Pada tahap BREAK, saya menguji reproducibility (variance antar run) dan kalibrasi penilai model (*LLM-as-a-judge*). Pada tahap FIX, saya membedah 5 kekeliruan laporan evaluasi yang menyesatkan. Pada tahap BUILD, saya menyusun `laporan-evaluasi.md` dan membuktikan penghematan biaya 37,5% tanpa menurunkan angka kelulusan untuk menyelesaikan Tantangan Wajib.
+Saya melaksanakan evaluasi sistematis produk pada 17 kasus uji acuan pakar sesuai angka lingkup $K=5$. Pada tahap READ, saya menguji konsistensi 5 kriteria biner ya/tidak. Pada tahap BREAK, saya menguji reproducibility (variance antar run) dan kalibrasi penilai model (*LLM-as-a-judge*). Pada tahap FIX, saya membedah 5 kekeliruan laporan evaluasi yang menyesatkan. Pada tahap BUILD, saya menyusun `laporan-evaluasi.md` dan membuktikan penghematan biaya 37,5% tanpa menurunkan angka kelulusan untuk menyelesaikan Tantangan Wajib.
 
 ## 2. Tahap READ — Pengujian 5 Kriteria Ya/Tidak Manual
 Hasil penilaian 5 kasus awal menggunakan kriteria biner:
@@ -69,7 +69,7 @@ Bagaimana membuktikan bahwa penghematan token 37,5% tidak menghilangkan konteks 
 ## 8. Pemakaian dan biaya
 | Kegiatan | Model | Perkiraan token | Perkiraan biaya |
 |---|---|---|---|
-| Uji 17 kasus evaluasi, BREAK 6 run, & kalibrasi | dots-studio, gemini-flash | ~12.500 token | Rp 0 (Free Tier) |
+| Uji 17 kasus evaluasi, BREAK 6 run, & kalibrasi | dots-studio, cohere/north-mini-code:free | ~12.500 token | Rp 0 (Free Tier) |
 
 Total minggu ini : Rp 0  
 Total kumulatif  : Rp 42  
@@ -87,4 +87,6 @@ Total kumulatif  : Rp 42
 ## 10. Yang macet dan rencana minggu depan
 Yang masih macet : Mempersiapkan kajian risiko komprehensif dan pernyataan etis untuk Minggu 15.  
 Rencana konkret minggu depan : Menyusun dokumen `kajian-risiko.md` dan batas etika penggunaan di Minggu 15.
+
+
 

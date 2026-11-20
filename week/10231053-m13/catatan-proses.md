@@ -1,6 +1,6 @@
-# CATATAN PROSES — MINGGU 13
+﻿# CATATAN PROSES — MINGGU 13
 
-Nama / NIM / K : Micka Mayulia Utama / 10231053 / 17 <br>
+Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
 Tanggal        : 27 November 2026 <br>
 Waktu yang saya habiskan minggu ini : 6 jam
 
@@ -84,4 +84,6 @@ Total kumulatif  : Rp 42
 ## 10. Yang macet dan rencana minggu depan
 Yang masih macet : Mempersiapkan 17 kasus uji evaluasi komparatif untuk evaluasi menyeluruh Blok E (Minggu 14).  
 Rencana konkret minggu depan : Melangkah ke Blok E — Kematangan & Evaluasi Kualitas Produk pada Minggu 14.
+
+
 
