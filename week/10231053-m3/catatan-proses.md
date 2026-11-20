@@ -1,4 +1,4 @@
-﻿# CATATAN PROSES — MINGGU 3
+# CATATAN PROSES — MINGGU 3
 
 Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
 Tanggal        : 18 September 2026 <br>

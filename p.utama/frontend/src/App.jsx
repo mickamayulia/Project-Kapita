@@ -493,7 +493,6 @@ export default function App() {
                   <option value="dots-studio/dots-3-note-preview:free">⚡ Dots 3 Note (Super Cepat ~0.5s / Free)</option>
                   <option value="cohere/north-mini-code:free">⚡ Cohere North Mini (Cepat ~0.7s / Free)</option>
                   <option value="nvidia/nemotron-3.5-lightning:free">Nvidia Nemotron 3.5 (Gratis)</option>
-                  <option value="cohere/north-mini-code:free">Dots 3 Note 2.5 Flash Lite (der.txt - Berbayar)</option>
                 </select>
               </div>
 
@@ -1163,7 +1162,6 @@ export default function App() {
                   <option value="dots-studio/dots-3-note-preview:free">dots-studio/dots-3-note-preview:free (Super Cepat ~0.5s / Free)</option>
                   <option value="cohere/north-mini-code:free">cohere/north-mini-code:free (Cepat ~0.7s / Free)</option>
                   <option value="nvidia/nemotron-3.5-lightning:free">nvidia/nemotron-3.5-lightning:free (Gratis)</option>
-                  <option value="cohere/north-mini-code:free">cohere/north-mini-code:free (Berbayar - der.txt)</option>
                 </select>
               </div>
 
