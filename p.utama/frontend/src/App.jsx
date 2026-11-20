@@ -23,6 +23,8 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [currentResult, setCurrentResult] = useState(null);
   const [activeUserMessage, setActiveUserMessage] = useState(''); // Pesan instan user saat tombol kirim ditekan
+  const [lastFailedMessage, setLastFailedMessage] = useState(''); // Teks terakhir yang gagal dikirim
+  const [analysisError, setAnalysisError] = useState(null); // Pesan error jika request gagal
   const [selectedModel, setSelectedModel] = useState('dots-studio/dots-3-note-preview:free');
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [sessionRecords, setSessionRecords] = useState([]);
@@ -88,14 +90,15 @@ export default function App() {
     fetchDocs();
   }, [role, isLoggedIn]);
 
-  const handleAnalyze = async (e) => {
-    if (e) e.preventDefault();
-    const sentText = inputPrompt.trim();
+  const handleAnalyze = async (e, textOverride = null) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const sentText = (typeof textOverride === 'string' ? textOverride : inputPrompt).trim();
     if (!sentText || loading) return;
 
     // 1. Tampilkan pesan user secara instan dan kosongkan input textarea
     setActiveUserMessage(sentText);
     setInputPrompt('');
+    setAnalysisError(null);
     setLoading(true);
 
     try {
@@ -112,16 +115,38 @@ export default function App() {
       const data = await res.json();
       if (res.ok) {
         setCurrentResult(data);
+        setLastFailedMessage('');
+        setAnalysisError(null);
         fetchRecords();
         showToast('Analisis risiko berhasil diperbarui!', 'success');
       } else {
-        showToast(data.error || 'Terjadi kesalahan analisis', 'error');
+        const errorMsg = data.error || 'Terjadi kesalahan analisis pada server.';
+        setLastFailedMessage(sentText);
+        setAnalysisError(errorMsg);
+        showToast(errorMsg, 'error');
       }
     } catch (e) {
-      showToast('Error koneksi: ' + e.message, 'error');
+      const errorMsg = 'Gagal terhubung ke server (' + e.message + '). Pastikan backend aktif.';
+      setLastFailedMessage(sentText);
+      setAnalysisError(errorMsg);
+      showToast(errorMsg, 'error');
     } finally {
       setLoading(false);
     }
+  };
+
+  // Handler retry pesan yang gagal
+  const handleRetry = () => {
+    if (!lastFailedMessage) return;
+    handleAnalyze(null, lastFailedMessage);
+  };
+
+  // Handler kembalikan teks yang gagal ke input prompt
+  const handleRestoreText = () => {
+    if (!lastFailedMessage) return;
+    setInputPrompt(lastFailedMessage);
+    setAnalysisError(null);
+    showToast('Teks berhasil dikembalikan ke kolom ketik.', 'info');
   };
 
   // User mengajukan draf ke Admin untuk ditinjau
@@ -151,6 +176,8 @@ export default function App() {
     setCurrentResult(null);
     setActiveUserMessage('');
     setInputPrompt('');
+    setLastFailedMessage('');
+    setAnalysisError(null);
     showToast('Sesi baru dimulai. Silakan masukkan laporan insiden.', 'info');
   };
 
@@ -588,6 +615,10 @@ export default function App() {
             handleAnalyze={handleAnalyze}
             currentResult={currentResult}
             activeUserMessage={activeUserMessage}
+            lastFailedMessage={lastFailedMessage}
+            analysisError={analysisError}
+            handleRetry={handleRetry}
+            handleRestoreText={handleRestoreText}
             handleExportCSV={handleExportCSV}
             handleExportJSON={handleExportJSON}
             handleSaveRegister={handleSaveRegister}

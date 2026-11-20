@@ -218,30 +218,41 @@ export default function LoginPortal({
         </form>
 
         {/* Quick Login Pill */}
-        <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>
-            Mode Demo Cepat (1-Klik):
-          </span>
-          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+        <div style={{ marginTop: '22px', paddingTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginBottom: '10px' }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--accent-cyan)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+              ⚡ Mode Demo Pengujian (1-Klik):
+            </span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             <button
               type="button"
               onClick={() => {
                 setRole('user');
                 setLoginUsername('Staf Aviako (Demo)');
                 onLoginSuccess('user');
-                showToast('Masuk Cepat sebagai Staf Operasional', 'success');
+                showToast('Masuk sebagai Staf Operasional (Clean User View)', 'success');
               }}
               style={{
-                background: 'rgba(59, 130, 246, 0.15)',
-                border: '1px solid rgba(59, 130, 246, 0.3)',
+                background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.2))',
+                border: '1px solid rgba(59, 130, 246, 0.45)',
                 color: '#93c5fd',
-                padding: '5px 10px',
-                borderRadius: '6px',
-                fontSize: '0.73rem',
-                cursor: 'pointer'
+                padding: '9px 12px',
+                borderRadius: '8px',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 8px rgba(59, 130, 246, 0.2)',
+                transition: 'all 0.2s ease'
               }}
+              title="Masuk langsung ke antarmuka Staf tanpa ketik kredensial"
             >
-              ⚡ Masuk Staf
+              <User size={14} color="#60a5fa" />
+              <span>Demo Staf</span>
             </button>
             <button
               type="button"
@@ -249,19 +260,28 @@ export default function LoginPortal({
                 setRole('admin');
                 setLoginPassword('admin123');
                 onLoginSuccess('admin');
-                showToast('Masuk Cepat sebagai Administrator', 'success');
+                showToast('Masuk sebagai Administrator (Risk Canvas & Audit View)', 'success');
               }}
               style={{
-                background: 'rgba(139, 92, 246, 0.15)',
-                border: '1px solid rgba(139, 92, 246, 0.3)',
+                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2))',
+                border: '1px solid rgba(139, 92, 246, 0.45)',
                 color: '#d8b4fe',
-                padding: '5px 10px',
-                borderRadius: '6px',
-                fontSize: '0.73rem',
-                cursor: 'pointer'
+                padding: '9px 12px',
+                borderRadius: '8px',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 8px rgba(139, 92, 246, 0.2)',
+                transition: 'all 0.2s ease'
               }}
+              title="Masuk langsung ke antarmuka Admin Risk Officer"
             >
-              🛡️ Masuk Admin
+              <ShieldCheck size={14} color="#c084fc" />
+              <span>Demo Admin</span>
             </button>
           </div>
         </div>
