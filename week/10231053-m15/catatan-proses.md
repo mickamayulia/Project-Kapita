@@ -1,7 +1,7 @@
 ﻿# CATATAN PROSES — MINGGU 15
 
 Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
-Tanggal        : 11 Desember 2026 <br>
+Tanggal        : 20 November 2026 (Penyelesaian Lebih Awal / Sprint Mandiri) <br>
 Waktu yang saya habiskan minggu ini : 6 jam
 
 ---
@@ -23,7 +23,7 @@ Mekanisme Pencegahan:
 Menerapkan Lapis 1 Input Sanitizer dan peringatan tegas pada antarmuka input agar staf tidak menempelkan informasi rahasia perorangan ke dalam deskripsi insiden.
 
 ## 3. Tahap BREAK — Enam Percobaan Bias & Keamanan
-Model & gateway: OpenRouter, 11 Desember 2026
+Model & gateway: OpenRouter, 20 November 2026
 
 | # | Percobaan | Prediksi Saya | Hasil Sebenarnya | Prediksi Tepat? |
 |---|---|---|---|---|

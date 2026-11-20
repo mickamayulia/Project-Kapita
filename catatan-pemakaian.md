@@ -22,10 +22,10 @@
 | 06/11/2026 | M10 | Eksperimen transisi workflow ke agent, loop test & ReAct | dots-studio/dots-3-note-preview:free | ~6.000 | ~3.000 | ~9.000 | Rp 0 (Free Tier) |
 | 13/11/2026 | M11 | Uji coba implementasi bounded agent & memory luar | dots-studio/dots-3-note-preview:free | ~7.500 | ~3.500 | ~11.000 | Rp 0 (Free Tier) |
 | 20/11/2026 | M12 | Studi kasus ASDOS-AI & Peer Review 2 rekan | - | - | - | - | Rp 0 |
-| 27/11/2026 | M13 | Uji penetrasi & pembuktian 5 lapis guardrails | dots-studio/dots-3-note-preview:free | ~6.000 | ~3.000 | ~9.000 | Rp 0 (Free Tier) |
-| 04/12/2026 | M14 | Evaluasi 17 kasus uji acuan pakar & kalibrasi LLM judge | dots-studio, cohere/north-mini-code:free | ~8.000 | ~4.500 | ~12.500 | Rp 0 (Free Tier) |
-| 11/12/2026 | M15 | Pengujian bias, alur data & verifikasi pernyataan etis | dots-studio/dots-3-note-preview:free | ~5.500 | ~2.500 | ~8.000 | Rp 0 (Free Tier) |
-| 18/12/2026 | M16 | Demonstrasi UAS & Pengujian 2 Kasus Acak Dosen | dots-studio/dots-3-note-preview:free | ~3.500 | ~1.500 | ~5.000 | Rp 0 (Free Tier) |
+| 19/11/2026 | M13 | Uji penetrasi & pembuktian 5 lapis guardrails | dots-studio/dots-3-note-preview:free | ~6.000 | ~3.000 | ~9.000 | Rp 0 (Free Tier) |
+| 20/11/2026 | M14 | Evaluasi 17 kasus uji acuan pakar & kalibrasi LLM judge | dots-studio, cohere/north-mini-code:free | ~8.000 | ~4.500 | ~12.500 | Rp 0 (Free Tier) |
+| 20/11/2026 | M15 | Pengujian bias, alur data & verifikasi pernyataan etis | dots-studio/dots-3-note-preview:free | ~5.500 | ~2.500 | ~8.000 | Rp 0 (Free Tier) |
+| Tentatif (UAS) | M16 | Persiapan Simulasi UAS & Pengujian 2 Kasus Acak | dots-studio/dots-3-note-preview:free | ~3.500 | ~1.500 | ~5.000 | Rp 0 (Free Tier) |
 
 ---
 

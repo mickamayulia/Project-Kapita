@@ -1,7 +1,7 @@
 ﻿# CATATAN PROSES — MINGGU 13
 
 Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
-Tanggal        : 27 November 2026 <br>
+Tanggal        : 19 November 2026 (Penyelesaian Lebih Awal / Sprint Mandiri) <br>
 Waktu yang saya habiskan minggu ini : 6 jam
 
 ---
@@ -19,7 +19,7 @@ Saya mengimplementasikan dan membuktikan efektivitas 5 lapis guardrails pada pro
 | Lapis 5 | Human-in-the-Loop | Endpoint `POST /api/registers/save` menunggu otorisasi eksplisit pengguna | **Paling Kuat** | Memperlambat siklus automasi penuh |
 
 ## 3. Tahap BREAK — Enam Percobaan Uji Serangan & Penetrasi
-Model & gateway: OpenRouter, 27 November 2026
+Model & gateway: OpenRouter, 19 November 2026
 
 | # | Percobaan Serangan | Prediksi Saya | Hasil Sebenarnya | Prediksi Tepat? |
 |---|---|---|---|---|

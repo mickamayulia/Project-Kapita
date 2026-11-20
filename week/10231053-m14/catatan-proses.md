@@ -1,7 +1,7 @@
 ﻿# CATATAN PROSES — MINGGU 14
 
 Nama / NIM / K : Micka Mayulia Utama / 10231053 / 5 <br>
-Tanggal        : 04 Desember 2026 <br>
+Tanggal        : 20 November 2026 (Penyelesaian Lebih Awal / Sprint Mandiri) <br>
 Waktu yang saya habiskan minggu ini : 7 jam
 
 ---
@@ -24,7 +24,7 @@ Pertanyaan **P3 (Bebas Halusinasi)** pada kasus mitigasi. Model sering menambahk
 *Perbaikan Kalimat Kriteria:* Diperjelas menjadi: *"Apakah seluruh langkah mitigasi secara eksplisit berakar pada teks klausul rujukan tanpa menambahkan persyaratan teknis baru?"*
 
 ## 3. Tahap BREAK — Enam Percobaan Evaluasi
-Model & gateway: OpenRouter, 04 Desember 2026
+Model & gateway: OpenRouter, 20 November 2026
 
 | # | Percobaan | Prediksi Saya | Hasil Sebenarnya | Prediksi Tepat? |
 |---|---|---|---|---|
